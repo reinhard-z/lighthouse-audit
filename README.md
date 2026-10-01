@@ -6,8 +6,6 @@ Lighthouse Audit is a remote [MCP](https://modelcontextprotocol.io/) server. Con
 
 Uses Lighthouse via Google PageSpeed Insights. Independently developed by Reinhard Zach; not affiliated with Google or OpenAI.
 
-**Status:** the server is online, but audits are switched off until launch. Until then, every audit request returns `SERVICE_UNAVAILABLE`.
-
 ## Connect
 
 Add this endpoint as a remote MCP server in your client and choose no authentication:

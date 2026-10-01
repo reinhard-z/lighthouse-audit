@@ -103,7 +103,7 @@ Out-of-band: if the pipeline is broken, `pnpm run deploy` deploys with your own 
 
 1. Invocation logs: checked on 2026-10-01 against a production `POST /mcp` entry. They recorded every request header (so `Authorization` or `Cookie` would appear if a client sent them), the client IP (`cf-connecting-ip`, `x-real-ip`), geolocation down to postal code and coordinates, and TLS fingerprints, but no request body. Invocation logs are therefore off (`observability.logs.invocation_logs: false`). Confirmed after deploying `7fdb13b` (version `e2916a3a`): an MCP `initialize` left no log entry, and a tool call left only the audit line, whose Cloudflare metadata holds the request method, the `/mcp` URL and the path, with no headers, IP or location. Subrequest tracing stays off in all cases.
 2. Get the privacy copy and the support link approved (see the owner-input checklist).
-3. Enable audits in a separate, reviewed pull request that changes `"AUDITS_ENABLED": "false"` to `"true"` in `wrangler.jsonc`, then release as above.
+3. Enable audits in a separate, reviewed pull request that changes `"AUDITS_ENABLED": "false"` to `"true"` in `wrangler.jsonc`, then release as above. Done on 2026-10-01.
 4. Repeat the live checks against production: `SMOKE_LIVE=1 pnpm smoke endpoint --base-url https://audit.mrza.ch`. Record the client timeout behavior and the production CPU time per request from the dashboard.
 
 ## Kill switch
@@ -138,7 +138,7 @@ Measured locally (2026-10-01): Worker bundle 715.10 KiB, 145.60 KiB gzip (`pnpm 
 ## Owner-input checklist
 
 - [x] Support link: GitHub Issues, on the landing and privacy pages
-- [ ] Approval of the privacy copy (3-day log retention, invocation logs off)
+- [x] Approval of the privacy copy (3-day log retention, invocation logs off), approved 2026-10-01
 - [ ] License
 - [x] PSI quotas, caps and the accepted-risk note recorded
 - [ ] Live smoke results recorded (table above)
