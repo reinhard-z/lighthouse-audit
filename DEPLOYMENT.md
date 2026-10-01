@@ -106,6 +106,8 @@ Out-of-band: if the pipeline is broken, `pnpm run deploy` deploys with your own 
 3. Enable audits in a separate, reviewed pull request that changes `"AUDITS_ENABLED": "false"` to `"true"` in `wrangler.jsonc`, then release as above. Done on 2026-10-01.
 4. Repeat the live checks against production: `SMOKE_LIVE=1 pnpm smoke endpoint --base-url https://audit.mrza.ch`. Record the client timeout behavior and the production CPU time per request from the dashboard.
 
+   Production run on 2026-10-01 (release `282ab81`), audits of https://mrza.ch: mobile 9.6 s and 10.2 s, desktop 11.6 s; serialized results 10,588 to 12,168 bytes; all scores 100. Client timeout behavior in a real client (ChatGPT developer mode) is _to be recorded_.
+
 ## Kill switch
 
 `AUDITS_ENABLED` in `wrangler.jsonc` is the source of truth. With anything other than `"true"`, discovery, health and the landing page still work, but tool calls return `SERVICE_UNAVAILABLE` without contacting Google.
@@ -133,7 +135,7 @@ The Worker logs one JSON line per audit with only these fields: `event`, `releas
 
 ## Capacity
 
-Measured locally (2026-10-01): Worker bundle 715.10 KiB, 145.60 KiB gzip (`pnpm build`). Production CPU time per request has not been measured; check it against the Workers Free limit (10 ms CPU per invocation) after the first live audits. Do not enable billing or change plans without recording the measurement and deciding explicitly.
+Measured locally (2026-10-01): Worker bundle 715.10 KiB, 145.60 KiB gzip (`pnpm build`). Production CPU time (Workers Metrics, 2026-10-01): the three production audits used about 30 to 49 ms CPU, and requests that never reached Google (audits disabled) about 29 ms on a cold start and 5 to 6 ms warm. Parsing and normalizing the 409 KB provider response takes about 5 ms cold and under 1 ms warm (local Node, measured on the saved smoke body), so most of the CPU time is per-request startup: the cold Worker and the MCP server with its schemas. This is above the Workers Free limit of 10 ms CPU per invocation. The measured requests were not stopped, but requests over the limit can fail with error 1102. Decision pending: stay on Free and watch Observability for CPU-limit errors, move to Workers Paid (the smallest plan change), or reduce startup cost. Do not enable billing or change plans without deciding explicitly.
 
 ## Owner-input checklist
 
