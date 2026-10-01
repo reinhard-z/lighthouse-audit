@@ -65,6 +65,12 @@ cp .dev.vars.example .dev.vars          # add your key; keep AUDITS_ENABLED=true
 SMOKE_LIVE=1 pnpm smoke provider --save # one direct PSI call: fields mask, header auth, size
 pnpm dev                                # in a second terminal
 SMOKE_LIVE=1 pnpm smoke endpoint        # mobile, second mobile, desktop audit of https://mrza.ch
+```
+
+The post-deploy checks expect audits to be disabled, as committed in `wrangler.jsonc`, but `.dev.vars` enables them locally. Run them against a dev server with audits switched off (`--var` overrides `.dev.vars`); otherwise the last check fails with `INVALID_URL`:
+
+```sh
+pnpm dev --var AUDITS_ENABLED:false     # instead of plain pnpm dev
 node scripts/post-deploy.ts --base-url http://localhost:8787
 ```
 
@@ -72,10 +78,10 @@ node scripts/post-deploy.ts --base-url http://localhost:8787
 
 | Item | Result |
 | ---- | ------ |
-| `fields` mask accepted (`src/pagespeed.ts` `PSI_FIELDS`) | _to be recorded_ |
-| Projected response size | _to be recorded_ |
-| `x-goog-api-key` header accepted | _to be recorded_ |
-| Typical audit duration (mobile / desktop) | _to be recorded_ |
+| `fields` mask accepted (`src/pagespeed.ts` `PSI_FIELDS`) | Yes (2026-10-01): status 200, all requested fields returned; 4 categories, 153 audits, Lighthouse 13.5.0 |
+| Projected response size | 409,212 bytes for one mobile audit (2026-10-01), about 10% of the 4 MiB cap |
+| `x-goog-api-key` header accepted | Yes (2026-10-01); no query-parameter fallback needed |
+| Typical audit duration (mobile / desktop) | Through the local endpoint (2026-10-01): mobile 10.5 s and 8.3 s, desktop 10.4 s; direct PSI call 9.7 s (mobile). Serialized tool results about 12 KB of the 32 KiB cap |
 | Provider error forms seen, with sanitized fixtures | _to be recorded_ |
 
 If PSI rejects the header, stop and decide on the documented `key` query-parameter fallback (SPEC.md §6) before releasing.
