@@ -169,27 +169,61 @@ describe("endpoint smoke exit status", () => {
   });
 });
 
+/** Makes the post-deploy script read the given committed kill-switch value. */
+function stubCommittedSwitch(value: "true" | "false"): void {
+  vi.doMock("node:fs", async (importOriginal) => {
+    const fs = await importOriginal<typeof import("node:fs")>();
+    return {
+      ...fs,
+      readFileSync: (path: Parameters<typeof fs.readFileSync>[0], options?: unknown) =>
+        String(path).endsWith("wrangler.jsonc")
+          ? `{ "vars": { "AUDITS_ENABLED": "${value}" } }`
+          : fs.readFileSync(path, options as BufferEncoding),
+    };
+  });
+}
+
+/** Synthetic deployed endpoint; records the target of any tools/call. */
+function stubEndpoint(code: string): { target: () => unknown } {
+  let target: unknown;
+  vi.stubGlobal("fetch", vi.fn(async (input: string, init?: RequestInit) => {
+    const path = new URL(input).pathname;
+    if (path === "/healthz") return Response.json({ ok: true, release: "synthetic" });
+    if (path === "/") return new Response("<h1>Lighthouse Audit</h1>");
+    if (path !== "/mcp") return new Response("Not found", { status: 404 });
+    if (new Headers(init?.headers).has("origin")) return new Response("Forbidden", { status: 403 });
+    const request = readRequest(init);
+    let result: unknown = {};
+    if (request.method === "tools/list") result = { tools: [{ name: "run_lighthouse" }] };
+    if (request.method === "tools/call") {
+      target = request.args.url;
+      result = { isError: true, structuredContent: { error: { code } } };
+    }
+    return Response.json({ jsonrpc: "2.0", id: request.id, result });
+  }));
+  return { target: () => target };
+}
+
 describe("post-deploy disabled-service probe", () => {
+  afterEach(() => {
+    vi.doUnmock("node:fs");
+  });
+
   it.each(["SERVICE_UNAVAILABLE", "INVALID_URL"])("uses an invalid URL when the endpoint returns %s", async (code) => {
-    let target: unknown;
-    vi.stubGlobal("fetch", vi.fn(async (input: string, init?: RequestInit) => {
-      const path = new URL(input).pathname;
-      if (path === "/healthz") return Response.json({ ok: true, release: "synthetic" });
-      if (path === "/") return new Response("<h1>Lighthouse Audit</h1>");
-      if (path !== "/mcp") return new Response("Not found", { status: 404 });
-      if (new Headers(init?.headers).has("origin")) return new Response("Forbidden", { status: 403 });
-      const request = readRequest(init);
-      let result: unknown = {};
-      if (request.method === "tools/list") result = { tools: [{ name: "run_lighthouse" }] };
-      if (request.method === "tools/call") {
-        target = request.args.url;
-        result = { isError: true, structuredContent: { error: { code } } };
-      }
-      return Response.json({ jsonrpc: "2.0", id: request.id, result });
-    }));
+    stubCommittedSwitch("false");
+    const endpoint = stubEndpoint(code);
     process.argv = ["node", "scripts/post-deploy.ts"];
     await import("../scripts/post-deploy");
-    expect(target).toBe("not-a-url");
+    expect(endpoint.target()).toBe("not-a-url");
     expect(process.exitCode).toBe(code === "SERVICE_UNAVAILABLE" ? 0 : 1);
+  });
+
+  it("makes no tool call while the committed switch enables audits", async () => {
+    stubCommittedSwitch("true");
+    const endpoint = stubEndpoint("SERVICE_UNAVAILABLE");
+    process.argv = ["node", "scripts/post-deploy.ts"];
+    await import("../scripts/post-deploy");
+    expect(endpoint.target()).toBeUndefined();
+    expect(process.exitCode).toBe(0);
   });
 });

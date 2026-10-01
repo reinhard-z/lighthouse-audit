@@ -30,8 +30,10 @@
     "traces": { "enabled": false },
   },
   "vars": {
-    // Kill switch. Stays "false" until the owner enables audits in a reviewed change.
-    "AUDITS_ENABLED": "false",
+    // Kill switch (SPEC.md §9). "true" runs audits; any other value makes tool
+    // calls return SERVICE_UNAVAILABLE without contacting Google. Enabled by
+    // the owner on 2026-10-01; set to "false" in a pull request to pause.
+    "AUDITS_ENABLED": "true",
     "PSI_TIMEOUT_MS": "55000",
   },
 }

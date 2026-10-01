@@ -102,8 +102,13 @@ describe("configuration", () => {
     expect(wrangler.preview_urls).toBe(false);
   });
 
-  it("ships with audits disabled, tracing off and no secrets or environments", () => {
-    expect(wrangler.vars).toEqual({ AUDITS_ENABLED: "false", PSI_TIMEOUT_MS: String(limits.DEFAULT_PSI_TIMEOUT_MS) });
+  it("sets the kill switch explicitly, with tracing off and no secrets or environments", () => {
+    // The owner flips AUDITS_ENABLED in a reviewed pull request (SPEC.md §9);
+    // either value is valid, but it must be one of the two.
+    expect(wrangler.vars).toEqual({
+      AUDITS_ENABLED: expect.stringMatching(/^(true|false)$/),
+      PSI_TIMEOUT_MS: String(limits.DEFAULT_PSI_TIMEOUT_MS),
+    });
     expect(wrangler.observability).toMatchObject({
       enabled: true,
       logs: { enabled: true, invocation_logs: false },
