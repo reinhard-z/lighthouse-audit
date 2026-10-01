@@ -14,10 +14,11 @@ export const PROVIDER_REQUESTS_PER_INVOCATION = 1;
 
 /**
  * Default provider timeout in milliseconds, including reading the body (§6).
- * Heavy pages take about 90 s at PSI (measured 2026-10-01), so this leaves a
- * margin above that rather than matching any client's timeout.
+ * ChatGPT stops waiting for a tool call after about 60 s (measured
+ * 2026-10-01), so this ends just before that and the client still receives
+ * AUDIT_TIMEOUT. Pages that take PSI longer cannot complete in ChatGPT.
  */
-export const DEFAULT_PSI_TIMEOUT_MS = 120_000;
+export const DEFAULT_PSI_TIMEOUT_MS = 57_000;
 
 /**
  * Accepted range for the PSI_TIMEOUT_MS variable, in milliseconds. The upper

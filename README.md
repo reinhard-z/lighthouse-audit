@@ -40,7 +40,7 @@ There is one tool, `run_lighthouse`, with two arguments:
 | `url`    | string                  | A public `http://` or `https://` URL, up to 2,048 characters |
 | `device` | `"mobile" \| "desktop"` | Optional, defaults to `mobile`                               |
 
-Each call sends one request to PageSpeed Insights and audits one page on one device. Nothing is cached or stored, so every call is a new audit. Most audits take around 10 seconds. Heavy pages can take up to two minutes, and slower ones fail with `AUDIT_TIMEOUT`.
+Each call sends one request to PageSpeed Insights and audits one page on one device. Nothing is cached or stored, so every call is a new audit. Most audits take around 10 seconds. Clients like ChatGPT stop waiting after about a minute, so the server gives up after 57 seconds and returns `AUDIT_TIMEOUT`. Very heavy pages that take Google longer than that can't be audited.
 
 The result is a single JSON object (`schemaVersion` `"1.0"`), sent both as structured content and as text. It contains:
 
