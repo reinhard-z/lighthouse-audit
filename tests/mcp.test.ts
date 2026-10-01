@@ -291,6 +291,18 @@ describe("tool calls", () => {
     expect(providerFetch).not.toHaveBeenCalled();
   });
 
+  it("keeps the post-deploy invalid-target probe Google-free under either kill-switch value", async () => {
+    for (const enabled of ["false", "true"]) {
+      const client = await connect({ ...ENABLED, AUDITS_ENABLED: enabled });
+      const result = await client.callTool({ name: TOOL_NAME, arguments: { url: "not-a-url" } });
+      expect(structuredOf(result).error?.code).toBe(
+        enabled === "false" ? "SERVICE_UNAVAILABLE" : "INVALID_URL",
+      );
+      await client.close();
+    }
+    expect(providerFetch).not.toHaveBeenCalled();
+  });
+
   it("maps a provider 3xx to INVALID_UPSTREAM_RESPONSE with no second fetch", async () => {
     providerFetch.mockImplementation(
       async () => new Response(null, { status: 302, headers: { location: "https://elsewhere.example.net/" } }),

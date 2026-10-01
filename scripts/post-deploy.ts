@@ -10,7 +10,8 @@
  *   node scripts/post-deploy.ts [--base-url https://audit.mrza.ch] [--release <sha>]
  *
  * The tool-call check runs only while wrangler.jsonc keeps AUDITS_ENABLED
- * "false"; with audits enabled a tool call would contact Google, so it is skipped.
+ * "false". An invalid target keeps the probe Google-free even if the live
+ * configuration unexpectedly has audits enabled.
  */
 import { readFileSync } from "node:fs";
 import { CANONICAL_ORIGIN } from "../src/branding.ts";
@@ -174,7 +175,9 @@ async function main(): Promise<void> {
           jsonrpc: "2.0",
           id: 4,
           method: "tools/call",
-          params: { name: "run_lighthouse", arguments: { url: "https://www.example.com/" } },
+          // Configuration is checked before URL validation. If the live switch is
+          // unexpectedly on, this target fails validation before any PSI request.
+          params: { name: "run_lighthouse", arguments: { url: "not-a-url" } },
         });
         const result = isRecord(message?.result) ? message.result : undefined;
         const structured = isRecord(result?.structuredContent) ? result.structuredContent : undefined;
@@ -200,7 +203,7 @@ async function main(): Promise<void> {
     console.log(`${outcome.pass ? "PASS" : "FAIL"}  ${check.name} (${outcome.detail})`);
   }
   if (auditsEnabled) {
-    console.log("SKIP  Tool call check: audits are enabled, and a tool call would contact Google");
+    console.log("SKIP  Disabled-service check: audits are enabled in the repository configuration");
   }
   console.log(`${failures === 0 ? "All checks passed" : `${failures} check(s) failed`}; release ${release ?? "not checked"}`);
   if (failures > 0) process.exitCode = 1;
