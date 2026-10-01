@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="Lighthouse Audit">
+  <rect width="48" height="48" rx="11" fill="#1f5f8b"/>
+  <path d="M10 31a14 14 0 0 1 28 0" fill="none" stroke="#fbfaf7" stroke-width="4" stroke-linecap="round"/>
+  <path d="M24 31l7-9" fill="none" stroke="#f0a64a" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="24" cy="31" r="3.5" fill="#fbfaf7"/>
+</svg>

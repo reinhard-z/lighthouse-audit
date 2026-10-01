@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lighthouse Audit — Website Performance &amp; SEO Checks</title>
+    <meta
+      name="description"
+      content="Run fresh Lighthouse website audits for performance, accessibility, SEO, and best practices via PageSpeed Insights. No separate signup."
+    />
+    <link rel="canonical" href="https://audit.mrza.ch/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Lighthouse Audit" />
+    <meta property="og:title" content="Lighthouse Audit — Website Performance &amp; SEO Checks" />
+    <meta
+      property="og:description"
+      content="Run fresh Lighthouse website audits for performance, accessibility, SEO, and best practices via PageSpeed Insights. No separate signup."
+    />
+    <meta property="og:url" content="https://audit.mrza.ch/" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/main.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <header class="hero">
+        <img class="mark" src="/favicon.svg" alt="" width="48" height="48" />
+        <h1>Lighthouse Audit</h1>
+        <p class="subtitle">Fresh website performance, accessibility, and SEO checks. No separate signup.</p>
+        <p>
+          A remote MCP server that lets ChatGPT and other compatible MCP clients run a fresh
+          Lighthouse lab audit of one public web page and explain the results.
+        </p>
+      </header>
+
+      <section aria-labelledby="endpoint-heading">
+        <h2 id="endpoint-heading">MCP endpoint</h2>
+        <div class="endpoint">
+          <code id="endpoint">https://audit.mrza.ch/mcp</code>
+          <button type="button" class="copy" data-copy-target="endpoint" hidden>Copy</button>
+        </div>
+        <p class="status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section aria-labelledby="connect-heading">
+        <h2 id="connect-heading">Connect a client</h2>
+        <ol>
+          <li>
+            In an MCP client that supports remote servers over Streamable HTTP, add a server with
+            the endpoint above. Select no authentication; the server needs no API key or login.
+          </li>
+          <li>
+            In ChatGPT, custom MCP servers can be connected where developer mode is available to
+            your account. A public directory listing for Lighthouse Audit does not exist.
+          </li>
+          <li>Ask for an audit of a public page. The client may ask you to approve the tool call.</li>
+        </ol>
+        <p>
+          “No separate signup” means you do not need an account, Google login, or API key for this
+          service. Your MCP client may still require its own account or integration approval.
+        </p>
+      </section>
+
+      <section aria-labelledby="examples-heading">
+        <h2 id="examples-heading">Example prompts</h2>
+        <ul class="prompts">
+          <li>“Run a Lighthouse audit of https://mrza.ch on mobile.”</li>
+          <li>“Which performance, accessibility, or SEO issues should I investigate first?”</li>
+          <li>
+            “I deployed a change. Run a fresh audit of https://mrza.ch and compare it with the
+            previous result in this conversation.”
+          </li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="what-heading">
+        <h2 id="what-heading">What you get</h2>
+        <p>
+          Each audit covers all four Lighthouse categories: performance, accessibility, best
+          practices, and SEO. Results include category scores, lab metrics (LCP, FCP, CLS, TBT and
+          Speed Index), and the most relevant findings with evidence.
+        </p>
+        <p>
+          Every request runs a new audit; nothing is cached or stored. One call audits one page on
+          one device, mobile by default. An audit can take up to about a minute.
+        </p>
+      </section>
+
+      <section aria-labelledby="limits-heading">
+        <h2 id="limits-heading">Limitations</h2>
+        <ul>
+          <li>Only public HTTP(S) pages can be audited; private, local, and logged-in pages cannot.</li>
+          <li>
+            Submit only public URLs without confidential information. URLs with obvious credentials
+            or tokens are refused, but this check cannot detect every secret.
+          </li>
+          <li>One page per call; there are no whole-site crawls and no audit history.</li>
+          <li>
+            Metrics are lab measurements from a single run, not real-user Core Web Vitals. Scores
+            vary between runs, automated accessibility checks are not a complete assessment, and an
+            SEO score is not a ranking guarantee.
+          </li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <p>Uses Lighthouse via Google PageSpeed Insights.</p>
+      <p>Independently developed by Reinhard Zach; not affiliated with Google or OpenAI.</p>
+      <!-- OWNER-INPUT: add the owner-approved support link here before public launch. -->
+      <nav aria-label="Legal"><a href="/privacy">Privacy</a></nav>
+    </footer>
+  </body>
+</html>
