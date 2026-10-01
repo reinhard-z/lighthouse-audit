@@ -2,21 +2,25 @@
 
 Fresh website performance, accessibility, and SEO checks. No separate signup.
 
-Lighthouse Audit is a remote [MCP](https://modelcontextprotocol.io/) server that lets ChatGPT and other compatible MCP clients run a fresh Lighthouse lab audit of one public web page. It covers all four Lighthouse categories: performance, accessibility, best practices, and SEO. The client explains the results; the server does not call a language model.
+Lighthouse Audit is a remote [MCP](https://modelcontextprotocol.io/) server. Connect it to ChatGPT or another MCP client, give it the address of a public web page, and it runs a new Lighthouse audit of that page covering performance, accessibility, best practices and SEO. Your client reads the results and explains them to you. The server itself doesn't use a language model.
 
 Uses Lighthouse via Google PageSpeed Insights. Independently developed by Reinhard Zach; not affiliated with Google or OpenAI.
 
+**Status:** the server is online, but audits are switched off until launch. Until then, every audit request returns `SERVICE_UNAVAILABLE`.
+
 ## Connect
 
-MCP endpoint (Streamable HTTP, no authentication):
+Add this endpoint as a remote MCP server in your client and choose no authentication:
 
 ```text
 https://audit.mrza.ch/mcp
 ```
 
-Add it as a remote MCP server in your client and select no authentication. In ChatGPT, custom MCP servers can be connected where developer mode is available. There is no public directory listing. You need no account, Google login, or API key for this service, but your client may require its own account or approval of the integration and of individual tool calls.
+The server uses Streamable HTTP. In ChatGPT, you can add custom MCP servers in developer mode if your plan includes it. The server isn't listed in any directory.
 
-Example prompts:
+You don't need an account, a Google login or an API key for this service. Your client may still ask you to sign in, or to approve the connection and each tool call.
+
+Things to try:
 
 - “Run a Lighthouse audit of https://mrza.ch on mobile.”
 - “Which performance, accessibility, or SEO issues should I investigate first?”
@@ -24,83 +28,94 @@ Example prompts:
 
 ## The tool
 
-The server exposes one tool, `run_lighthouse`:
+There is one tool, `run_lighthouse`, with two arguments:
 
-| Argument | Type                    | Notes                                                   |
-| -------- | ----------------------- | ------------------------------------------------------- |
-| `url`    | string                  | Absolute public `http(s)://` URL, up to 2,048 characters |
-| `device` | `"mobile" \| "desktop"` | Optional; defaults to `mobile`                          |
+| Argument | Type                    | Notes                                                        |
+| -------- | ----------------------- | ------------------------------------------------------------ |
+| `url`    | string                  | A public `http://` or `https://` URL, up to 2,048 characters |
+| `device` | `"mobile" \| "desktop"` | Optional, defaults to `mobile`                               |
 
-Each call makes exactly one new PageSpeed Insights request; nothing is cached, deduplicated, or stored. One call audits one page on one device. An audit can take up to about a minute.
+Each call sends one request to PageSpeed Insights and audits one page on one device. Nothing is cached or stored, so every call is a new audit. Most audits take around 10 seconds, and some take up to a minute.
 
-The result is a single JSON object (`schemaVersion` `"1.0"`), returned both as structured content and as an equivalent text block. On success it contains category scores (0–100), lab metrics (LCP, FCP, CLS, TBT, Speed Index), up to 20 ranked findings with bounded evidence, manual checks, audit errors, counts and warnings. On failure it contains a stable error code such as `INVALID_URL`, `UNSUPPORTED_TARGET`, `CAPACITY_EXCEEDED` or `PAGE_LOAD_FAILED`, a fixed message, and a `retryable` flag. The whole result is capped at 32 KiB; any truncation is flagged.
+The result is a single JSON object (`schemaVersion` `"1.0"`), sent both as structured content and as text. It contains:
+
+- the four category scores, from 0 to 100
+- lab metrics: LCP, FCP, CLS, TBT and Speed Index
+- up to 20 findings, most important first, each with a few examples from the page
+- manual checks, audit errors, counts and warnings
+
+If the audit fails, you get an error code instead, such as `INVALID_URL`, `UNSUPPORTED_TARGET`, `CAPACITY_EXCEEDED` or `PAGE_LOAD_FAILED`, with a short message and a `retryable` flag. Results are capped at 32 KiB. If a list or its details had to be shortened, `truncated` is `true`.
 
 ## Limitations
 
-- Public HTTP(S) pages only. Local, private-network and IP-address targets, URLs with credentials, non-default ports, and URLs with obvious secret-bearing query parameters are refused. That check is a defensive heuristic, not complete secret detection: submit only public URLs without confidential information.
-- One page per call: no crawls, no scheduled monitoring, no stored history. To compare runs, ask the client to compare results already in the conversation.
-- Lab data from a single emulated run, not real-user Core Web Vitals. Scores vary between runs, automated accessibility checks are not a complete assessment, and an SEO score is not a ranking guarantee.
-- Titles, descriptions, URLs and snippets in results come from the audited page and from Google. Treat them as untrusted data.
-- Shared, limited capacity. The service runs on free tiers: Google PageSpeed Insights allows this project 25,000 audits per day and 30 per minute, shared by all users, with the daily quota resetting at midnight Pacific Time. There are no accounts and no per-user allowance, so heavy use by anyone can exhaust the quota for everyone; audits then fail with `CAPACITY_EXCEEDED` until the minute passes or the daily quota resets. Do not retry automatically. The service may also be paused at any time to protect the quota.
+It only audits public HTTP(S) pages. Requests for local or private-network addresses, IP addresses, non-default ports, URLs with a username or password, and URLs whose query string looks like it holds a secret are refused. That last check only catches obvious cases, so don't send URLs that contain anything confidential.
 
-See the [privacy page](https://audit.mrza.ch/privacy) for how submitted URLs are handled.
+It audits one page per call. It can't crawl a site, run on a schedule or keep a history. To compare two runs, ask your client to compare results that are already in the conversation.
+
+The numbers are lab data from a single emulated page load, not real-user Core Web Vitals, and scores vary a little from run to run. Automated accessibility checks find only some of the problems a full review would, and a good SEO score doesn't mean good rankings.
+
+Page titles, descriptions, URLs and snippets in the results come from the audited page and from Google. Treat them as untrusted input.
+
+Capacity is limited and shared. The service runs on free tiers. Google allows this project 25,000 PageSpeed Insights requests a day and 30 a minute, for all users together, and the daily quota resets at midnight Pacific Time. There are no accounts or per-user limits, so one heavy user can use up the quota for everyone. When that happens, audits fail with `CAPACITY_EXCEEDED` until the minute is over or the daily quota resets. Don't retry automatically. Audits may also be switched off at any time to protect the quota.
+
+The [privacy page](https://audit.mrza.ch/privacy) explains what happens to the URLs you submit.
 
 ## Development
 
-Requirements: Node.js 22.18 or later, and pnpm 11 (the version is pinned in `package.json`).
+You need Node.js 22.18 or later and pnpm 11. The exact pnpm version is pinned in `package.json`.
 
 ```sh
 pnpm install --frozen-lockfile
-pnpm dev          # wrangler dev on http://localhost:8787 (localhost Host/Origin allowed)
-pnpm typecheck    # tsc, strict
-pnpm test         # Vitest: workerd pool plus Node checks; never calls Google
+pnpm dev          # wrangler dev on http://localhost:8787
+pnpm typecheck    # tsc in strict mode
+pnpm test         # Vitest in workerd and Node; never calls Google
 pnpm build        # wrangler deploy --dry-run --outdir dist
-pnpm post-deploy  # Google-free checks of a deployed endpoint (see DEPLOYMENT.md)
-pnpm smoke        # opt-in live checks; requires SMOKE_LIVE=1 and a real key
-pnpm run deploy   # out-of-band production deploy, owner only (see DEPLOYMENT.md)
+pnpm post-deploy  # checks a deployed endpoint without calling Google (see DEPLOYMENT.md)
+pnpm smoke        # live checks against Google; needs SMOKE_LIVE=1 and a real key
+pnpm run deploy   # manual production deploy, owner only (see DEPLOYMENT.md)
 ```
 
-For live local audits, copy `.dev.vars.example` to `.dev.vars` (gitignored) and add a PageSpeed Insights API key. Without a key, discovery and health work and tool calls return `SERVICE_UNAVAILABLE`.
+To run real audits locally, copy `.dev.vars.example` to `.dev.vars` (it's gitignored) and add a PageSpeed Insights API key. Without a key, the server still starts and answers `initialize` and `tools/list`, but tool calls return `SERVICE_UNAVAILABLE`.
 
-[SPEC.md](SPEC.md) is the binding specification, and [AGENTS.md](AGENTS.md) holds the contributor rules.
+[SPEC.md](SPEC.md) is the specification the code follows, and [AGENTS.md](AGENTS.md) has the rules for contributors.
 
 ### Layout
 
 ```text
 src/index.ts        HTTP routing, Host/Origin checks, body limit, headers, health
-src/mcp.ts          MCP server factory, tool registration, audit flow
-src/pagespeed.ts    The single PSI request: bounds, timeout, cancellation, error mapping
-src/normalize.ts    Pure extraction, classification, ranking and size reduction
-src/validation.ts   Target URL and environment validation
-src/schemas.ts      Zod input/output schemas and derived types
-src/errors.ts       Fixed public error messages
+src/mcp.ts          MCP server setup, tool registration, audit flow
+src/pagespeed.ts    The PageSpeed Insights request: limits, timeout, cancellation, errors
+src/normalize.ts    Turns the Lighthouse report into the tool result (pure functions)
+src/validation.ts   Target URL and environment checks
+src/schemas.ts      Zod input and output schemas, and the types derived from them
+src/errors.ts       Public error messages
 src/limits.ts       All limits and defaults (SPEC.md Appendix A)
 src/branding.ts     Display copy and canonical URLs
-public/             Static landing, privacy and 404 pages
+public/             Landing, privacy and 404 pages
 tests/              Vitest suites and synthetic fixtures
-scripts/            Opt-in smoke checks and post-deploy checks
+scripts/            Live smoke checks and post-deploy checks
 ```
 
-### Dependency versions and caveats
+### Dependencies
 
-| Package                                    | Version | Note                                                                                                                                                         |
-| ------------------------------------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `agents`                                   | 0.24.0  | Provides `createMcpHandler` (`agents/mcp/server`). Exact-pins its MCP peers, so update it together with them.                                                  |
-| `@modelcontextprotocol/server`             | 2.0.0   | Exact peer declared by `agents` 0.24.0 (SDK v2). Serves the 2026-07-28 protocol and, through the stateless compatibility lane, 2025-era clients.               |
-| `@modelcontextprotocol/client`             | 2.0.0   | Exact peer declared by `agents` 0.24.0; used in tests as a real client.                                                                                        |
-| `@modelcontextprotocol/sdk`                | 1.30.0  | Required peer of `agents`, installed automatically; this project never imports it.                                                                            |
-| `zod`                                      | 4.6.5   | Schemas; JSON Schema is produced by the MCP SDK.                                                                                                              |
-| `wrangler`                                 | 4.145.0 | Build and deploy.                                                                                                                                             |
-| `@cloudflare/vitest-pool-workers`          | 0.22.0  | Requires Vitest 4 and bundles Wrangler 4.124.0 / workerd 2026-08-15; that runtime does not know `observability.redact_query_string` and prints a warning.      |
-| `vitest`                                   | 4.1.11  | Vitest 5 is not yet supported by the Workers pool.                                                                                                            |
-| `typescript`                               | 7.0.2   | Type checking only.                                                                                                                                            |
+| Package                           | Version | Notes                                                                                                        |
+| --------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------ |
+| `agents`                          | 0.24.0  | Provides `createMcpHandler`. Pins its MCP packages to exact versions, so update them together.               |
+| `@modelcontextprotocol/server`    | 2.0.0   | The version `agents` 0.24.0 requires (SDK v2). Serves protocol 2026-07-28 and still works with 2025 clients. |
+| `@modelcontextprotocol/client`    | 2.0.0   | The version `agents` 0.24.0 requires. Used as a real MCP client in tests.                                    |
+| `@modelcontextprotocol/sdk`       | 1.30.0  | Required by `agents` and installed automatically. This project never imports it.                             |
+| `zod`                             | 4.6.5   | Input and output schemas. The MCP SDK turns them into JSON Schema.                                           |
+| `wrangler`                        | 4.145.0 | Build and deploy.                                                                                            |
+| `@cloudflare/vitest-pool-workers` | 0.22.0  | Needs Vitest 4. Its bundled workerd doesn't know `observability.redact_query_string` and warns about it.     |
+| `vitest`                          | 4.1.11  | The Workers pool doesn't support Vitest 5 yet.                                                               |
+| `typescript`                      | 7.0.2   | Type checking only.                                                                                          |
 
-Other caveats:
+A few more things worth knowing:
 
-- `compatibility_date` is `2026-08-15`, the newest date supported by both installed workerd builds, so tests and production use the same date.
-- `nodejs_compat` is enabled because the Agents MCP handler imports `node:async_hooks`.
-- The tool's anonymous access is advertised as `_meta.securitySchemes: [{ "type": "noauth" }]`, OpenAI's documented mirror field. The MCP SDK's `tools/list` builder does not emit a top-level `securitySchemes` field.
+- `compatibility_date` is `2026-08-15`, the newest date both installed workerd builds support, so tests and production run with the same date.
+- `nodejs_compat` is on because the Agents MCP handler imports `node:async_hooks`.
+- The tool declares anonymous access in `_meta.securitySchemes: [{ "type": "noauth" }]`, the field OpenAI documents for this. The MCP SDK doesn't output a top-level `securitySchemes` field in `tools/list`.
 
 ## License
 
-No license has been selected yet.
+No license has been chosen yet.
