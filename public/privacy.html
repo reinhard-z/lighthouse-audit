@@ -41,11 +41,10 @@
       <p>
         For operations, the service writes a short log entry per audit containing a random request
         ID, the device, the duration, the outcome code, the provider response size, and the
-        release version. These entries do not contain the URL. Cloudflare may also record request
-        metadata for calls to the service endpoint in its Workers logs. Both kinds of log entries
-        are deleted after 3 days.
+        release version. These entries do not contain the URL, your IP address, or request headers,
+        and they are deleted after 3 days. Cloudflare's automatic per-request logging, which would
+        record IP addresses and headers, is turned off for this service.
       </p>
-      <!-- OWNER-INPUT: confirm the invocation-log fields in the Cloudflare dashboard before launch. -->
 
       <h2>What other services may keep</h2>
       <p>
