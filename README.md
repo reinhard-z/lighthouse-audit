@@ -40,7 +40,7 @@ There is one tool, `run_lighthouse`, with two arguments:
 | `url`    | string                  | A public `http://` or `https://` URL, up to 2,048 characters |
 | `device` | `"mobile" \| "desktop"` | Optional, defaults to `mobile`                               |
 
-Each call sends one request to PageSpeed Insights and audits one page on one device. Nothing is cached or stored, so every call is a new audit. Most audits take around 10 seconds. Clients like ChatGPT stop waiting after about a minute, so the server gives up after 57 seconds and returns `AUDIT_TIMEOUT`. Very heavy pages that take Google longer than that can't be audited.
+Each call sends one request to PageSpeed Insights and audits one page on one device. Nothing is cached or stored, so every call is a new audit. Most audits take around 10 seconds. The server stops after 57 seconds and returns `AUDIT_TIMEOUT` (see [Limitations](#limitations)).
 
 The result is a single JSON object (`schemaVersion` `"1.0"`), sent both as structured content and as text. It contains:
 
@@ -56,6 +56,8 @@ If the audit fails, you get an error code instead, such as `INVALID_URL`, `UNSUP
 It only audits public HTTP(S) pages. Requests for local or private-network addresses, IP addresses, non-default ports, URLs with a username or password, and URLs whose query string looks like it holds a secret are refused. That last check only catches obvious cases, so don't send URLs that contain anything confidential.
 
 It audits one page per call. It can't crawl a site, run on a schedule or keep a history. To compare two runs, ask your client to compare results that are already in the conversation.
+
+Very heavy pages can't be audited. ChatGPT, like many MCP clients, stops waiting for a tool call after about a minute, and the server can't extend that: ChatGPT doesn't accept progress updates, and handing back the result in a later call would need storage this service doesn't have. So the server stops after 57 seconds and returns `AUDIT_TIMEOUT`. Most pages finish in 10 to 20 seconds, but some large news and shopping sites take Google 70 to 90 seconds. ChatGPT usually retries once, so you may wait about two minutes before you see the error. Sites that block automated browsers fail as well. For those pages, use [PageSpeed Insights](https://pagespeed.web.dev/) directly.
 
 The numbers are lab data from a single emulated page load, not real-user Core Web Vitals, and scores vary a little from run to run. Automated accessibility checks find only some of the problems a full review would, and a good SEO score doesn't mean good rankings.
 
