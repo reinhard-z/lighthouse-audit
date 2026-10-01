@@ -19,7 +19,7 @@
     "deploy": "wrangler deploy"
   },
   "dependencies": {
-    "@modelcontextprotocol/server": "2.0.0",
+    "@modelcontextprotocol/server": "2.1.0",
     "agents": "0.24.0",
     "zod": "4.6.5"
   },
@@ -27,7 +27,7 @@
     "@cfworker/json-schema": "4.1.1",
     "@cloudflare/vitest-pool-workers": "0.22.0",
     "@cloudflare/workers-types": "5.20261001.1",
-    "@modelcontextprotocol/client": "2.0.0",
+    "@modelcontextprotocol/client": "2.1.0",
     "@types/node": "22.20.4",
     "tsx": "4.23.15",
     "typescript": "7.0.2",
