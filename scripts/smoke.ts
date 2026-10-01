@@ -21,7 +21,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { isDeepStrictEqual } from "node:util";
 import { buildPageSpeedUrl, PSI_FIELDS } from "../src/pagespeed";
 import { isRecord } from "../src/guards";
-import { MAX_PROVIDER_RESPONSE_BYTES, MAX_TOOL_RESULT_BYTES } from "../src/limits";
+import { DEFAULT_PSI_TIMEOUT_MS, MAX_PROVIDER_RESPONSE_BYTES, MAX_TOOL_RESULT_BYTES } from "../src/limits";
 import { extractReportDraft, fitAuditResult } from "../src/normalize";
 import { AuditResultSchema, CATEGORIES } from "../src/schemas";
 
@@ -35,6 +35,8 @@ function requireCheck(condition: unknown, message: string): asserts condition {
 
 const SMOKE_TARGET = "https://mrza.ch/";
 const OUTPUT_DIRECTORY = "smoke-output";
+/** Client-side wait: longer than the server's audit timeout, so its AUDIT_TIMEOUT arrives first. */
+const SMOKE_TIMEOUT_MS = DEFAULT_PSI_TIMEOUT_MS + 30_000;
 
 function readApiKey(): string {
   if (process.env.PSI_API_KEY) return process.env.PSI_API_KEY;
@@ -51,7 +53,7 @@ async function provider(save: boolean): Promise<void> {
   const response = await fetch(buildPageSpeedUrl(SMOKE_TARGET, "mobile"), {
     headers: { "x-goog-api-key": readApiKey(), accept: "application/json" },
     redirect: "manual",
-    signal: AbortSignal.timeout(120_000),
+    signal: AbortSignal.timeout(SMOKE_TIMEOUT_MS),
   });
   const text = await response.text();
   const seconds = ((Date.now() - started) / 1000).toFixed(1);
@@ -118,7 +120,7 @@ async function rpc(baseUrl: string, id: number, method: string, params: unknown)
       "mcp-protocol-version": "2025-06-18",
     },
     body: JSON.stringify({ jsonrpc: "2.0", id, method, params }),
-    signal: AbortSignal.timeout(120_000),
+    signal: AbortSignal.timeout(SMOKE_TIMEOUT_MS),
   });
   const text = await response.text();
   const json = text.startsWith("event:") || text.startsWith("data:")

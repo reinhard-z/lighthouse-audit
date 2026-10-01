@@ -12,8 +12,12 @@ export const MAX_MCP_REQUEST_BODY_BYTES = 32 * 1024;
 /** Provider requests per tool invocation; there are no automatic retries (§6). */
 export const PROVIDER_REQUESTS_PER_INVOCATION = 1;
 
-/** Default provider timeout in milliseconds, including reading the body (§6). */
-export const DEFAULT_PSI_TIMEOUT_MS = 55_000;
+/**
+ * Default provider timeout in milliseconds, including reading the body (§6).
+ * Heavy pages take about 90 s at PSI (measured 2026-10-01), so this leaves a
+ * margin above that rather than matching any client's timeout.
+ */
+export const DEFAULT_PSI_TIMEOUT_MS = 120_000;
 
 /**
  * Accepted range for the PSI_TIMEOUT_MS variable, in milliseconds. The upper

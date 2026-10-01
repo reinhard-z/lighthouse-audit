@@ -149,7 +149,7 @@ Require an absolute HTTP(S) URL. Maximum input URL length: 2,048 characters. Rej
 
 Suggested tool description:
 
-> Run a fresh Lighthouse lab audit of one public HTTP(S) page using Google PageSpeed Insights. Use for website speed and performance testing, accessibility checks, and basic on-page SEO checks. Returns performance, accessibility, best-practices and SEO scores, lab metrics, and audit findings. Defaults to mobile and can take up to about a minute. The URL is sent to Google. No separate signup or user-provided API key is required. Private or authenticated pages and whole-site crawls are unsupported. No audit history is retained.
+> Run a fresh Lighthouse lab audit of one public HTTP(S) page using Google PageSpeed Insights. Use for website speed and performance testing, accessibility checks, and basic on-page SEO checks. Returns performance, accessibility, best-practices and SEO scores, lab metrics, and audit findings. Defaults to mobile and can take up to about two minutes. The URL is sent to Google. No separate signup or user-provided API key is required. Private or authenticated pages and whole-site crawls are unsupported. No audit history is retained.
 
 Register the tool with the title **Run Lighthouse audit**, an input schema that rejects additional properties, and the output schema below advertised as `outputSchema`. Advertise `noauth` through the currently documented tool security metadata. Use `readOnlyHint: true`, `destructiveHint: false`, `idempotentHint: false`, and `openWorldHint: true`. Do not claim idempotence for a fresh measurement tool. Check the actual discovery output, not just TypeScript configuration. [S1][S2]
 
@@ -299,7 +299,7 @@ Only the owner needs the Google project/API key. End users do not supply one. Fa
 
 One accepted invocation gets **at most one** PSI request. No automatic retries, including after a 429, a timeout, or a field-mask error. An HTTP success with a Lighthouse `runtimeError` still requires failure handling.
 
-Start with an application timeout of **55,000 ms**, including reading the response. This is a design default, not a claimed ChatGPT timeout. Propagate request/MCP cancellation where supported and release timers/readers in cleanup. Cancellation may not cancel work already started at Google.
+Use an application timeout of **120,000 ms**, including reading the response. The original 55,000 ms default cut off heavy pages, which take about 90 s at PSI (measured 2026-10-01), so the owner raised it. This is still a design default, not a claimed ChatGPT timeout. Propagate request/MCP cancellation where supported and release timers/readers in cleanup. Cancellation may not cancel work already started at Google.
 
 Keep the tool synchronous for V1. Before launch, test that typical audits complete within the real client's wait budget. If normal audits repeatedly exceed that budget, report the incompatibility and measured timings. Do not quietly add queues, background jobs, polling tools, or paid infrastructure.
 
@@ -467,7 +467,7 @@ Starting `wrangler.jsonc` design (validate against the installed Wrangler schema
   },
   "vars": {
     "AUDITS_ENABLED": "false",
-    "PSI_TIMEOUT_MS": "55000",
+    "PSI_TIMEOUT_MS": "120000",
   },
 }
 ```
@@ -745,7 +745,7 @@ Keep these in one module (`src/limits.ts`). They are design defaults, not vendor
 | Input URL length                            | 2,048 characters                              | §4      |
 | MCP request body                            | 32 KiB                                        | §8      |
 | Provider requests per invocation            | 1, no automatic retries                       | §6      |
-| Provider timeout (`PSI_TIMEOUT_MS`)         | 55,000 ms, including body read                | §6      |
+| Provider timeout (`PSI_TIMEOUT_MS`)         | 120,000 ms, including body read               | §6      |
 | Provider response, decompressed             | 4 MiB                                         | §6      |
 | Stale provider timestamp warning            | more than 5 minutes before `requestStartedAt` | §5      |
 | Pass threshold for scored audits            | 0.9                                           | §7      |
