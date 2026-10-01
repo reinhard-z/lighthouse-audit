@@ -1,5 +1,11 @@
 # Lighthouse Audit
 
+[![CI](https://github.com/reinhard-z/lighthouse-audit/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/reinhard-z/lighthouse-audit/actions/workflows/ci.yml)
+[![Deploy production](https://github.com/reinhard-z/lighthouse-audit/actions/workflows/deploy.yml/badge.svg)](https://github.com/reinhard-z/lighthouse-audit/actions/workflows/deploy.yml)
+[![MCP: Streamable HTTP](https://img.shields.io/badge/MCP-Streamable_HTTP-blue)](#connect)
+[![Runs on Cloudflare Workers](https://img.shields.io/badge/runs_on-Cloudflare_Workers-F38020)](https://developers.cloudflare.com/workers/)
+[![Node.js 22.18+](https://img.shields.io/badge/node-%E2%89%A522.18-339933)](package.json)
+
 Fresh website performance, accessibility, and SEO checks. No separate signup.
 
 Lighthouse Audit is a remote [MCP](https://modelcontextprotocol.io/) server. Connect it to ChatGPT or another MCP client, give it the address of a public web page, and it runs a new Lighthouse audit of that page covering performance, accessibility, best practices and SEO. Your client reads the results and explains them to you. The server itself doesn't use a language model.
