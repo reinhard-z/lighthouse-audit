@@ -25,11 +25,24 @@ Lighthouse Audit is an anonymous, stateless remote MCP server on one Cloudflare 
 
 ## Status
 
-Only the spec exists so far. Follow the build order in §14. When you add the scaffold, replace the Commands section below with the real scripts.
+V1 is implemented: the Worker, the tool, the static pages, the tests, both workflows and the docs. Production deployment, live smoke checks and enabling audits are owner actions (see DEPLOYMENT.md).
 
 ## Commands
 
-_Not scaffolded yet._ The planned scripts (§12) cover dev, typecheck, test, dry-run build, the post-deploy check and an out-of-band `deploy`. The package manager is pnpm (`pnpm install --frozen-lockfile` in CI).
+Node.js 22.18+ and pnpm 11 (pinned in `package.json`). Dependency install scripts run only for packages allowed in `pnpm-workspace.yaml`.
+
+```sh
+pnpm install --frozen-lockfile
+pnpm dev          # wrangler dev on localhost:8787 with LOCAL_DEVELOPMENT=true
+pnpm typecheck    # tsc --noEmit, strict
+pnpm test         # Vitest: "workers" project in workerd, "node" project for repository checks
+pnpm build        # wrangler deploy --dry-run --outdir dist
+pnpm post-deploy  # node scripts/post-deploy.ts: Google-free endpoint checks (--base-url, --release)
+pnpm smoke        # opt-in live checks; refuses to run without SMOKE_LIVE=1 (owner only)
+pnpm run deploy   # out-of-band wrangler deploy (owner only)
+```
+
+Run `pnpm typecheck && pnpm test && pnpm build` before reporting a code change. Update the snapshot in `tests/__snapshots__/` only when a normalization change is intended, and review the diff.
 
 ## Code quality
 
