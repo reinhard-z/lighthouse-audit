@@ -13,6 +13,8 @@ Lighthouse Audit is a remote [MCP](https://modelcontextprotocol.io/) server. Con
 
 Uses Lighthouse via Google PageSpeed Insights. Independently developed by Reinhard Zach; not affiliated with Google or OpenAI.
 
+<img src="docs/chatgpt-audit-example.png" width="720" alt="ChatGPT running a mobile Lighthouse audit of https://mrza.ch with this server: category scores of 99 for performance and 100 for accessibility, best practices and SEO, the five lab metrics, and four minor findings">
+
 ## Connect
 
 Add this endpoint as a remote MCP server in your client and choose no authentication:
