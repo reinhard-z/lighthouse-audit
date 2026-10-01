@@ -17,14 +17,19 @@ There is deliberately no staging environment (SPEC.md §11). The first productio
 
 1. Create a dedicated Google Cloud project and enable the PageSpeed Insights API.
 2. Create an API key restricted to the PageSpeed Insights API.
-3. Check the actual PSI quotas for the project, set conservative caps where adjustable, and keep automatic quota increases disabled.
-4. Record the quota units, limits and reset behavior:
+3. Check the actual PSI quotas for the project, set conservative caps where adjustable, and keep automatic quota increases disabled. Keep the project without a billing account, so the quota is a hard ceiling and PSI usage costs nothing.
+4. Record the quota units, limits and reset behavior. Recorded 2026-10-01 from the project's **Quotas & System Limits** page:
 
-   | Quota | Limit | Reset | Cap set |
-   | ----- | ----- | ----- | ------- |
-   | _to be recorded_ | | | |
+   | Quota              | Unit                     | Limit  | Reset                        | Cap set                      |
+   | ------------------ | ------------------------ | ------ | ---------------------------- | ---------------------------- |
+   | Queries per day    | PSI requests per project | 25,000 | Daily, midnight Pacific Time | 25,000 (the maximum allowed) |
+   | Queries per minute | PSI requests per project | 30     | Per minute                   | 30 (the maximum allowed)     |
+
+   Each tool call makes exactly one PSI request, so these are also the service-wide limits on audits. Both quotas are shared by all callers. Lower caps would not reduce cost (there is none without billing); they would only exhaust the service sooner, so the maximum is kept.
 
 5. Record the acceptance of the anonymous-quota risk (SPEC.md §9): one caller can exhaust the day's quota, after which audits fail with `CAPACITY_EXCEEDED` for everyone until the reset. Mitigations are the kill switch and, optionally later, a rate-limiting binding.
+
+   **Accepted by the owner on 2026-10-01** as a limitation of the free, anonymous design and of the PSI quota. Bursts above 30 audits per minute also fail with `CAPACITY_EXCEEDED` until the minute passes.
 
 ### Cloudflare
 
@@ -129,7 +134,7 @@ Measured locally (2026-10-01): Worker bundle 715.10 KiB, 145.60 KiB gzip (`pnpm 
 - [ ] Support link or contact for the landing page (`public/index.html`, marked `OWNER-INPUT`)
 - [ ] Approval of the privacy copy, including log retention (`public/privacy.html`, marked `OWNER-INPUT`)
 - [ ] License
-- [ ] PSI quotas, caps and the accepted-risk note recorded
+- [x] PSI quotas, caps and the accepted-risk note recorded
 - [ ] Live smoke results recorded (table above)
 - [ ] Invocation-log fields checked before enabling audits
 - [ ] Naming and directory-review checks (see SUBMISSION.md)

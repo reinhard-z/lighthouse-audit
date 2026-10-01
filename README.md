@@ -41,6 +41,7 @@ The result is a single JSON object (`schemaVersion` `"1.0"`), returned both as s
 - One page per call: no crawls, no scheduled monitoring, no stored history. To compare runs, ask the client to compare results already in the conversation.
 - Lab data from a single emulated run, not real-user Core Web Vitals. Scores vary between runs, automated accessibility checks are not a complete assessment, and an SEO score is not a ranking guarantee.
 - Titles, descriptions, URLs and snippets in results come from the audited page and from Google. Treat them as untrusted data.
+- Shared, limited capacity. The service runs on free tiers: Google PageSpeed Insights allows this project 25,000 audits per day and 30 per minute, shared by all users, with the daily quota resetting at midnight Pacific Time. There are no accounts and no per-user allowance, so heavy use by anyone can exhaust the quota for everyone; audits then fail with `CAPACITY_EXCEEDED` until the minute passes or the daily quota resets. Do not retry automatically. The service may also be paused at any time to protect the quota.
 
 See the [privacy page](https://audit.mrza.ch/privacy) for how submitted URLs are handled.
 
