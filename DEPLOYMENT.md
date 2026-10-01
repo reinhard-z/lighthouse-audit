@@ -141,7 +141,7 @@ Measured locally (2026-10-01): Worker bundle 715.10 KiB, 145.60 KiB gzip (`pnpm 
 
 - [x] Support link: GitHub Issues, on the landing and privacy pages
 - [x] Approval of the privacy copy (3-day log retention, invocation logs off), approved 2026-10-01
-- [ ] License
+- [x] License: MIT (2026-10-01)
 - [x] PSI quotas, caps and the accepted-risk note recorded
 - [ ] Live smoke results recorded (table above)
 - [x] Invocation-log fields checked before enabling audits (invocation logs turned off)

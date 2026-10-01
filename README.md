@@ -5,6 +5,7 @@
 [![MCP: Streamable HTTP](https://img.shields.io/badge/MCP-Streamable_HTTP-blue)](#connect)
 [![Runs on Cloudflare Workers](https://img.shields.io/badge/runs_on-Cloudflare_Workers-F38020)](https://developers.cloudflare.com/workers/)
 [![Node.js 22.18+](https://img.shields.io/badge/node-%E2%89%A522.18-339933)](package.json)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 Fresh website performance, accessibility, and SEO checks. No separate signup.
 
@@ -122,4 +123,4 @@ A few more things worth knowing:
 
 ## License
 
-No license has been chosen yet.
+[MIT](LICENSE) © 2026 Reinhard Zach. The license covers this code. It doesn't grant any rights to the Lighthouse or Google names, or to the PageSpeed Insights API, which has its own terms.

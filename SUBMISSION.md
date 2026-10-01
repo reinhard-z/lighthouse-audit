@@ -14,7 +14,7 @@ Public-directory listing is a separate deliverable from a working endpoint. Noth
 - [ ] Tested in MCP Inspector and in ChatGPT developer mode; no external login required
 - [ ] Client timeout behavior measured against typical audit durations
 - [ ] Privacy page and support contact approved and published
-- [ ] License selected
+- [x] License selected: MIT
 - [ ] Current OpenAI submission and review requirements rechecked
 - [ ] Naming and branding review done
 - [ ] Google API terms reviewed
