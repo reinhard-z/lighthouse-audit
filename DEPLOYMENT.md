@@ -33,7 +33,7 @@ There is deliberately no staging environment (SPEC.md §11). The first productio
 
 ### Cloudflare
 
-1. Create an API token from the **Edit Cloudflare Workers** template, restricted to your account and the `mrza.ch` zone. Confirm on the first deploy that it can update the Worker and its Custom Domain. Note that such a token can change any Worker in the account.
+1. Create an API token from the **Edit Cloudflare Workers** template, restricted to your account and the `mrza.ch` zone. Confirmed on the first deploy (2026-10-01): the token updates the Worker and its Custom Domain. Note that such a token can change any Worker in the account.
 2. Check zone security and cache rules: `/mcp` must not get Cloudflare Access, a CAPTCHA or an interactive challenge, and no cache rule may override `Cache-Control: no-store` on `/mcp`.
 3. After the first deploy has created the Worker, set the key once:
 
@@ -91,7 +91,7 @@ If PSI rejects the header, stop and decide on the documented `key` query-paramet
 1. Merge to `main` through a pull request; CI must pass.
 2. In GitHub Actions, run **Deploy production** on `main` (workflow_dispatch). Runs from other refs fail immediately.
 3. The **build** job installs, typechecks, tests and dry-run builds, then uploads `dist/`, `public/` and `wrangler.jsonc` as an artifact.
-4. Approve the **deploy** job when the `production` environment asks. It installs only Wrangler (install scripts disabled) and deploys the prebuilt bundle with `wrangler deploy dist/index.js --no-bundle --var RELEASE:<commit SHA>`. Confirm on the first run that this path also deploys the static assets and the custom-domain route.
+4. Approve the **deploy** job when the `production` environment asks. It installs only Wrangler (install scripts disabled) and deploys the prebuilt bundle with `wrangler deploy dist/index.js --no-bundle --var RELEASE:<commit SHA>`. The first run (2026-10-01, release `9b394cc`) confirmed that this path also uploads the static assets and attaches the `audit.mrza.ch` custom domain.
 5. The **verify** job runs `node scripts/post-deploy.ts` against `https://audit.mrza.ch` without the Cloudflare token and without calling Google. It checks `/healthz` and the release, the landing page, a 404, MCP `initialize` and `tools/list` (exactly one tool), a 403 for a foreign `Origin` and, while audits are disabled, the disabled error from a tool call. A failed check fails the run; then decide between rollback and fix-forward.
 
 Out-of-band: if the pipeline is broken, `pnpm run deploy` deploys with your own Wrangler login. Record any such deploy here:
