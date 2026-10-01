@@ -130,3 +130,7 @@ footer {
 footer p {
   margin: 0.25rem 0;
 }
+
+footer nav a + a {
+  margin-left: 1rem;
+}
