@@ -15,6 +15,8 @@ Uses Lighthouse via Google PageSpeed Insights. Independently developed by Reinha
 
 <img src="docs/chatgpt-audit-example.png" width="720" alt="ChatGPT running a mobile Lighthouse audit of https://mrza.ch with this server: category scores of 99 for performance and 100 for accessibility, best practices and SEO, the five lab metrics, and four minor findings">
 
+_ChatGPT with this server connected. Asked to audit a page on mobile, it called `run_lighthouse` and summarized the result: category scores, lab metrics and the most important findings. The whole exchange took about 19 seconds._
+
 ## Connect
 
 Add this endpoint as a remote MCP server in your client and choose no authentication:
