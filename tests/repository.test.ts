@@ -104,7 +104,11 @@ describe("configuration", () => {
 
   it("ships with audits disabled, tracing off and no secrets or environments", () => {
     expect(wrangler.vars).toEqual({ AUDITS_ENABLED: "false", PSI_TIMEOUT_MS: String(limits.DEFAULT_PSI_TIMEOUT_MS) });
-    expect(wrangler.observability).toMatchObject({ enabled: true, traces: { enabled: false } });
+    expect(wrangler.observability).toMatchObject({
+      enabled: true,
+      logs: { enabled: true, invocation_logs: false },
+      traces: { enabled: false },
+    });
     expect(wrangler).not.toHaveProperty("env");
     expect(JSON.stringify(wrangler)).not.toMatch(/PSI_API_KEY/);
   });

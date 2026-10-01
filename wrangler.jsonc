@@ -19,12 +19,14 @@
     "not_found_handling": "404-page",
     "run_worker_first": ["/mcp", "/mcp/*", "/healthz"],
   },
-  // Invocation logs on, automatic subrequest tracing off: a traced provider URL
+  // Worker logs on for the one-line audit log only. Invocation logs off: they
+  // record every request header plus the caller's IP and location (checked in
+  // production on 2026-10-01). Subrequest tracing off: a traced provider URL
   // would contain the audited target URL (SPEC.md §8).
   "observability": {
     "enabled": true,
     "redact_query_string": true,
-    "logs": { "enabled": true, "invocation_logs": true },
+    "logs": { "enabled": true, "invocation_logs": false },
     "traces": { "enabled": false },
   },
   "vars": {

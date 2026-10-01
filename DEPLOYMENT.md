@@ -101,7 +101,7 @@ Out-of-band: if the pipeline is broken, `pnpm run deploy` deploys with your own 
 
 ## Before enabling audits
 
-1. Make a few real calls and inspect the Workers invocation-log entries in the Cloudflare dashboard. Record which request fields they contain. If they include `Authorization`, `Cookie` or any request body, set `observability.logs.invocation_logs` to `false` in `wrangler.jsonc`. Subrequest tracing stays off in all cases.
+1. Invocation logs: checked on 2026-10-01 against a production `POST /mcp` entry. They recorded every request header (so `Authorization` or `Cookie` would appear if a client sent them), the client IP (`cf-connecting-ip`, `x-real-ip`), geolocation down to postal code and coordinates, and TLS fingerprints, but no request body. Invocation logs are therefore off (`observability.logs.invocation_logs: false`). After the next deploy, check that new log entries contain only the Worker's own audit line. Subrequest tracing stays off in all cases.
 2. Get the privacy copy and the support link approved (see the owner-input checklist).
 3. Enable audits in a separate, reviewed pull request that changes `"AUDITS_ENABLED": "false"` to `"true"` in `wrangler.jsonc`, then release as above.
 4. Repeat the live checks against production: `SMOKE_LIVE=1 pnpm smoke endpoint --base-url https://audit.mrza.ch`. Record the client timeout behavior and the production CPU time per request from the dashboard.
@@ -129,7 +129,7 @@ A rollback also restores that version's variables. Immediately check `AUDITS_ENA
 
 ## Logging
 
-The Worker logs one JSON line per audit with only these fields: `event`, `release`, `requestId` (random), `device`, `outcome` (error code or `ok`), `durationMs`, `providerStatus`, `responseBytes` and `reason` (a provider reason token or internal tag). It never logs the key, the target URL, the provider URL or query, request bodies, raw Lighthouse output, headers or cookies. Configured observability: Workers logs on, invocation logs on (pending the check above), query strings redacted, traces off.
+The Worker logs one JSON line per audit with only these fields: `event`, `release`, `requestId` (random), `device`, `outcome` (error code or `ok`), `durationMs`, `providerStatus`, `responseBytes` and `reason` (a provider reason token or internal tag). It never logs the key, the target URL, the provider URL or query, request bodies, raw Lighthouse output, headers or cookies. Configured observability: Workers logs on (3-day retention on Workers Free), invocation logs off, query strings redacted, traces off.
 
 ## Capacity
 
@@ -138,9 +138,9 @@ Measured locally (2026-10-01): Worker bundle 715.10 KiB, 145.60 KiB gzip (`pnpm 
 ## Owner-input checklist
 
 - [x] Support link: GitHub Issues, on the landing and privacy pages
-- [ ] Approval of the privacy copy. Log retention is set to 3 days (Workers Free); the invocation-log fields are still marked `OWNER-INPUT` in `public/privacy.html`
+- [ ] Approval of the privacy copy (3-day log retention, invocation logs off)
 - [ ] License
 - [x] PSI quotas, caps and the accepted-risk note recorded
 - [ ] Live smoke results recorded (table above)
-- [ ] Invocation-log fields checked before enabling audits
+- [x] Invocation-log fields checked before enabling audits (invocation logs turned off)
 - [ ] Naming and directory-review checks (see SUBMISSION.md)
