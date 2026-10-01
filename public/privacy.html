@@ -42,10 +42,10 @@
         For operations, the service writes a short log entry per audit containing a random request
         ID, the device, the duration, the outcome code, the provider response size, and the
         release version. These entries do not contain the URL. Cloudflare may also record request
-        metadata for calls to the service endpoint in its Workers logs, which are kept according to
-        Cloudflare's log retention for this account.
+        metadata for calls to the service endpoint in its Workers logs. Both kinds of log entries
+        are deleted after 3 days.
       </p>
-      <!-- OWNER-INPUT: confirm the invocation-log fields and the retention period before launch. -->
+      <!-- OWNER-INPUT: confirm the invocation-log fields in the Cloudflare dashboard before launch. -->
 
       <h2>What other services may keep</h2>
       <p>
@@ -65,7 +65,11 @@
     <footer>
       <p>Uses Lighthouse via Google PageSpeed Insights.</p>
       <p>Independently developed by Reinhard Zach; not affiliated with Google or OpenAI.</p>
-      <!-- OWNER-INPUT: add the owner-approved support or privacy contact here before public launch. -->
+      <p>
+        Questions about this page:
+        <a href="https://github.com/reinhard-z/lighthouse-audit/issues">open an issue on GitHub</a>.
+        Issues are public, so please don't include personal information.
+      </p>
     </footer>
   </body>
 </html>

@@ -137,8 +137,8 @@ Measured locally (2026-10-01): Worker bundle 715.10 KiB, 145.60 KiB gzip (`pnpm 
 
 ## Owner-input checklist
 
-- [ ] Support link or contact for the landing page (`public/index.html`, marked `OWNER-INPUT`)
-- [ ] Approval of the privacy copy, including log retention (`public/privacy.html`, marked `OWNER-INPUT`)
+- [x] Support link: GitHub Issues, on the landing and privacy pages
+- [ ] Approval of the privacy copy. Log retention is set to 3 days (Workers Free); the invocation-log fields are still marked `OWNER-INPUT` in `public/privacy.html`
 - [ ] License
 - [x] PSI quotas, caps and the accepted-risk note recorded
 - [ ] Live smoke results recorded (table above)

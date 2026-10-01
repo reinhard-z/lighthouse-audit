@@ -35,6 +35,7 @@ describe("branding and static metadata", () => {
     expect(landing).toContain(branding.PROVIDER_ATTRIBUTION);
     expect(landing).toContain(branding.INDEPENDENCE_NOTICE);
     expect(landing).toContain(branding.MCP_ENDPOINT_URL);
+    expect(landing).toContain(`href="${branding.SUPPORT_URL}"`);
     expect(landing).toContain(`rel="canonical" href="${branding.CANONICAL_ORIGIN}/"`);
     expect(landing).toContain(`property="og:url" content="${branding.CANONICAL_ORIGIN}/"`);
     expect(landing).toContain(`property="og:title" content="${branding.PAGE_TITLE}"`);
@@ -55,6 +56,7 @@ describe("branding and static metadata", () => {
   it("names the product on the privacy page and links canonical URLs", () => {
     expect(privacy).toContain(`<h1>${branding.PRODUCT_NAME} privacy</h1>`);
     expect(privacy).toContain(`rel="canonical" href="${branding.PRIVACY_URL}"`);
+    expect(privacy).toContain(`href="${branding.SUPPORT_URL}"`);
     expect(notFound).toContain("Page not found");
   });
 

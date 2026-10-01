@@ -35,3 +35,6 @@ export const CANONICAL_ORIGIN = `https://${PRODUCTION_HOSTNAME}`;
 
 export const MCP_ENDPOINT_URL = `${CANONICAL_ORIGIN}/mcp`;
 export const PRIVACY_URL = `${CANONICAL_ORIGIN}/privacy`;
+
+/** Public support channel, linked from the landing and privacy pages. */
+export const SUPPORT_URL = "https://github.com/reinhard-z/lighthouse-audit/issues";
