@@ -1,0 +1,15 @@
+node_modules/
+dist/
+deploy-bundle/
+.wrangler/
+coverage/
+# Raw live smoke-test output; sanitize before reusing anything as a fixture.
+smoke-output/
+# Local secrets; never commit.
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+.env
+.env.*
+*.log
+.DS_Store

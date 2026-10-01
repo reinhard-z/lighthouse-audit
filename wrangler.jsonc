@@ -1,0 +1,35 @@
+// Production configuration for Lighthouse Audit (SPEC.md §11).
+// There are no Wrangler environments: this top-level configuration is production.
+// Secrets (PSI_API_KEY) are set with `wrangler secret put` and never stored here.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "lighthouse-audit",
+  "main": "src/index.ts",
+  // No later than the oldest installed workerd (the vitest pool pins workerd 1.20260815).
+  "compatibility_date": "2026-08-15",
+  // Required by the pinned Agents SDK, whose MCP handler imports node:async_hooks.
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "audit.mrza.ch", "custom_domain": true }],
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/mcp", "/mcp/*", "/healthz"],
+  },
+  // Invocation logs on, automatic subrequest tracing off: a traced provider URL
+  // would contain the audited target URL (SPEC.md §8).
+  "observability": {
+    "enabled": true,
+    "redact_query_string": true,
+    "logs": { "enabled": true, "invocation_logs": true },
+    "traces": { "enabled": false },
+  },
+  "vars": {
+    // Kill switch. Stays "false" until the owner enables audits in a reviewed change.
+    "AUDITS_ENABLED": "false",
+    "PSI_TIMEOUT_MS": "55000",
+  },
+}

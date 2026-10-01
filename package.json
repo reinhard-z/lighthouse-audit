@@ -1,0 +1,38 @@
+{
+  "name": "lighthouse-audit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Anonymous, stateless remote MCP server that runs Lighthouse audits through Google PageSpeed Insights.",
+  "type": "module",
+  "packageManager": "pnpm@11.0.3",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "dev": "wrangler dev --var LOCAL_DEVELOPMENT:true",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build": "wrangler deploy --dry-run --outdir dist",
+    "smoke": "tsx scripts/smoke.ts",
+    "post-deploy": "node scripts/post-deploy.ts",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.0.0",
+    "agents": "0.24.0",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@cfworker/json-schema": "4.1.1",
+    "@cloudflare/vitest-pool-workers": "0.22.0",
+    "@cloudflare/workers-types": "5.20261001.1",
+    "@modelcontextprotocol/client": "2.0.0",
+    "@types/node": "22.20.4",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vitest": "4.1.11",
+    "wrangler": "4.145.0",
+    "yaml": "2.9.1"
+  }
+}

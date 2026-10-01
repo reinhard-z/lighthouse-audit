@@ -1,0 +1,6 @@
+# Dependency install scripts run only for the packages allowed here (§11).
+allowBuilds:
+  esbuild: true
+  workerd: true
+  # Postinstall only prints a banner; not needed.
+  core-js-pure: false
