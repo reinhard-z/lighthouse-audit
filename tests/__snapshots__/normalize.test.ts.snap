@@ -1,0 +1,275 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`normalization of the synthetic fixture > produces identical output for the fixed fixture (snapshot) 1`] = `
+{
+  "error": null,
+  "ok": true,
+  "report": {
+    "auditErrors": [
+      {
+        "id": "robots-txt",
+        "message": "Synthetic error: robots.txt could not be fetched.",
+      },
+    ],
+    "cachePolicy": "no-application-cache",
+    "completedAt": "2026-10-01T10:00:30.000Z",
+    "counts": {
+      "diagnostic": 0,
+      "errored": 1,
+      "failed": 10,
+      "manual": 3,
+      "omittedIssues": 0,
+      "returnedIssues": 10,
+    },
+    "device": "mobile",
+    "finalUrl": "https://www.example.com/",
+    "issues": [
+      {
+        "categories": [
+          "performance",
+        ],
+        "description": "Description of lcp-discovery-insight.",
+        "evidence": [
+          {
+            "selector": "main > img.hero",
+            "snippet": "<img class="hero" src="/hero.jpg">",
+          },
+        ],
+        "evidenceTruncated": false,
+        "id": "lcp-discovery-insight",
+        "kind": "failed",
+        "metricSavings": {
+          "LCP": 900,
+        },
+        "score": 0.5,
+        "scoreDisplayMode": "metricSavings",
+        "title": "Title of lcp-discovery-insight",
+      },
+      {
+        "categories": [
+          "performance",
+          "best-practices",
+        ],
+        "description": "Description of render-blocking-insight.",
+        "displayValue": "Est savings of 450 ms",
+        "evidence": [
+          {
+            "url": "https://www.example.com/styles/main.css",
+            "wastedMs": 300,
+          },
+          {
+            "url": "https://www.example.com/scripts/vendor.js",
+            "wastedMs": 150,
+          },
+        ],
+        "evidenceTruncated": false,
+        "id": "render-blocking-insight",
+        "kind": "failed",
+        "metricSavings": {
+          "FCP": 450,
+          "LCP": 450,
+        },
+        "score": 0,
+        "scoreDisplayMode": "metricSavings",
+        "title": "Title of render-blocking-insight",
+      },
+      {
+        "categories": [
+          "performance",
+        ],
+        "description": "Description of image-delivery-insight.",
+        "estimatedSavingsBytes": 144050,
+        "evidence": [
+          {
+            "url": "https://www.example.com/hero.jpg",
+            "wastedBytes": 120000,
+          },
+          {
+            "wastedBytes": 50,
+          },
+          {
+            "url": "https://www.example.com/a.jpg",
+            "wastedBytes": 9000,
+          },
+        ],
+        "evidenceTruncated": true,
+        "id": "image-delivery-insight",
+        "kind": "failed",
+        "metricSavings": {
+          "LCP": 150,
+        },
+        "score": 0.5,
+        "scoreDisplayMode": "metricSavings",
+        "title": "Title of image-delivery-insight",
+      },
+      {
+        "categories": [
+          "performance",
+        ],
+        "description": "Description of bootup-time.",
+        "displayValue": "2.1 s",
+        "evidence": [
+          {
+            "url": "https://www.example.com/scripts/app.js",
+          },
+        ],
+        "evidenceTruncated": false,
+        "id": "bootup-time",
+        "kind": "failed",
+        "metricSavings": {
+          "TBT": 120,
+        },
+        "score": 0.62,
+        "scoreDisplayMode": "numeric",
+        "title": "Title of bootup-time",
+      },
+      {
+        "categories": [
+          "performance",
+        ],
+        "description": "Description of font-display-insight.",
+        "evidence": [],
+        "evidenceTruncated": false,
+        "id": "font-display-insight",
+        "kind": "failed",
+        "score": 0,
+        "scoreDisplayMode": "metricSavings",
+        "title": "Title of font-display-insight",
+      },
+      {
+        "categories": [
+          "accessibility",
+        ],
+        "description": "Description of link-name.",
+        "evidence": [
+          {
+            "selector": "a.icon",
+            "snippet": "<a class="icon" href="/cart">",
+          },
+        ],
+        "evidenceTruncated": false,
+        "id": "link-name",
+        "kind": "failed",
+        "score": 0,
+        "scoreDisplayMode": "binary",
+        "title": "Title of link-name",
+      },
+      {
+        "categories": [
+          "accessibility",
+        ],
+        "description": "Description of color-contrast.",
+        "evidence": [
+          {
+            "selector": "footer > p",
+            "snippet": "<p class="muted">",
+          },
+          {
+            "selector": "nav a.secondary",
+            "snippet": "<a class="secondary" href="/about">",
+          },
+        ],
+        "evidenceTruncated": false,
+        "id": "color-contrast",
+        "kind": "failed",
+        "score": 0,
+        "scoreDisplayMode": "binary",
+        "title": "Title of color-contrast",
+      },
+      {
+        "categories": [
+          "best-practices",
+        ],
+        "description": "Description of errors-in-console.",
+        "evidence": [
+          {
+            "url": "https://www.example.com/scripts/app.js",
+          },
+        ],
+        "evidenceTruncated": false,
+        "id": "errors-in-console",
+        "kind": "failed",
+        "score": 0,
+        "scoreDisplayMode": "binary",
+        "title": "Title of errors-in-console",
+      },
+      {
+        "categories": [
+          "best-practices",
+        ],
+        "description": "Description of inspector-issues.",
+        "evidence": [],
+        "evidenceTruncated": false,
+        "id": "inspector-issues",
+        "kind": "failed",
+        "score": 0.5,
+        "scoreDisplayMode": "binary",
+        "title": "Title of inspector-issues",
+      },
+      {
+        "categories": [
+          "seo",
+        ],
+        "description": "Description of meta-description.",
+        "evidence": [],
+        "evidenceTruncated": false,
+        "id": "meta-description",
+        "kind": "failed",
+        "score": 0,
+        "scoreDisplayMode": "binary",
+        "title": "Title of meta-description",
+      },
+    ],
+    "labMetrics": {
+      "cls": 0.046,
+      "fcpMs": 1834,
+      "lcpMs": 3121,
+      "speedIndexMs": 2501,
+      "tbtMs": 0,
+    },
+    "lighthouseVersion": "13.0.0",
+    "manualChecks": [
+      {
+        "categories": [
+          "accessibility",
+        ],
+        "id": "logical-tab-order",
+        "title": "Title of logical-tab-order",
+      },
+      {
+        "categories": [
+          "accessibility",
+        ],
+        "id": "focus-traps",
+        "title": "Title of focus-traps",
+      },
+      {
+        "categories": [
+          "seo",
+        ],
+        "id": "structured-data",
+        "title": "Title of structured-data",
+      },
+    ],
+    "provider": "google-pagespeed-insights",
+    "providerFetchTime": "2026-10-01T09:59:31.000Z",
+    "requestStartedAt": "2026-10-01T10:00:00.000Z",
+    "requestedUrl": "https://www.example.com/",
+    "scores": {
+      "accessibility": 88,
+      "best-practices": 92,
+      "performance": 73,
+      "seo": 90,
+    },
+    "truncated": true,
+    "warnings": [
+      "Scores can vary between runs; a single run is not a stable measurement.",
+      "Metrics are lab measurements from one emulated run, not real-user Core Web Vitals; TBT is not INP.",
+      "Automated accessibility checks are not a complete accessibility assessment.",
+      "An SEO score, including 100, is not a search-ranking guarantee.",
+    ],
+  },
+  "requestId": "req",
+  "schemaVersion": "1.0",
+}
+`;
