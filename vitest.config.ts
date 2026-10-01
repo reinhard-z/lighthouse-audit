@@ -12,7 +12,16 @@ export default defineConfig({
   test: {
     projects: [
       {
-        plugins: [cloudflareTest({ wrangler: { configPath: "./wrangler.jsonc" } })],
+        plugins: [
+          cloudflareTest({
+            wrangler: { configPath: "./wrangler.jsonc" },
+            // Wrangler also loads a developer's gitignored .dev.vars, which
+            // enables audits and holds a real key. These bindings override it,
+            // so tests see the committed kill-switch value and never a real key
+            // (an empty key counts as missing).
+            miniflare: { bindings: { AUDITS_ENABLED: "false", PSI_API_KEY: "" } },
+          }),
+        ],
         test: {
           name: "workers",
           include: ["tests/**/*.test.ts"],
