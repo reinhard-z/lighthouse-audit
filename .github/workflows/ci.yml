@@ -1,0 +1,58 @@
+# Checks for pull requests (including forks) and pushes to main (SPEC.md §11).
+# Needs no secrets, never calls Google and never deploys.
+# Uses `pull_request`, never `pull_request_target`.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Typecheck, test and dry-run build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      WRANGLER_SEND_METRICS: "false"
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+
+      # Install scripts run only for packages allowed in pnpm-workspace.yaml.
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test (mocked provider, workerd pool)
+        run: pnpm test
+
+      - name: Dry-run build
+        run: pnpm build
+
+      - name: Record bundle size
+        run: |
+          raw=$(wc -c < dist/index.js)
+          gzip_size=$(gzip -9 -c dist/index.js | wc -c)
+          {
+            echo "### Worker bundle"
+            echo ""
+            echo "| File | Raw bytes | Gzip bytes |"
+            echo "| --- | ---: | ---: |"
+            echo "| dist/index.js | ${raw} | ${gzip_size} |"
+          } >> "$GITHUB_STEP_SUMMARY"

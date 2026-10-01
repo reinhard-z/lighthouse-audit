@@ -1,0 +1,16 @@
+# Update pull requests for the SHA-pinned GitHub Actions and the pnpm lockfile.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      cloudflare:
+        patterns: ["wrangler", "@cloudflare/*"]
+      mcp:
+        patterns: ["agents", "@modelcontextprotocol/*", "zod"]
