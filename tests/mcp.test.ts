@@ -375,4 +375,21 @@ describe("logging", () => {
     expect(logged).toContain('"release":"test-release"');
     expect(logged).toContain('"outcome":"PAGE_LOAD_FAILED"');
   });
+
+  it("logs whether the client asked for progress notifications", async () => {
+    const lines: string[] = [];
+    vi.spyOn(console, "log").mockImplementation((line: unknown) => {
+      lines.push(String(line));
+    });
+    const client = await connect();
+    // Invalid targets return before any provider call.
+    await client.callTool({ name: TOOL_NAME, arguments: { url: "not-a-url" } });
+    await client.callTool({ name: TOOL_NAME, arguments: { url: "not-a-url" } }, { onprogress: () => {} });
+    await client.close();
+
+    const audits = lines.filter((line) => line.includes('"event":"audit"'));
+    expect(audits).toHaveLength(2);
+    expect(audits[0]).toContain('"progressRequested":false');
+    expect(audits[1]).toContain('"progressRequested":true');
+  });
 });

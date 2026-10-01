@@ -149,7 +149,7 @@ Require an absolute HTTP(S) URL. Maximum input URL length: 2,048 characters. Rej
 
 Suggested tool description:
 
-> Run a fresh Lighthouse lab audit of one public HTTP(S) page using Google PageSpeed Insights. Use for website speed and performance testing, accessibility checks, and basic on-page SEO checks. Returns performance, accessibility, best-practices and SEO scores, lab metrics, and audit findings. Defaults to mobile and can take up to about two minutes. The URL is sent to Google. No separate signup or user-provided API key is required. Private or authenticated pages and whole-site crawls are unsupported. No audit history is retained.
+> Run a fresh Lighthouse lab audit of one public HTTP(S) page using Google PageSpeed Insights. Use for website speed and performance testing, accessibility checks, and basic on-page SEO checks. Returns performance, accessibility, best-practices and SEO scores, lab metrics, and audit findings. Defaults to mobile and can take up to about a minute. The URL is sent to Google. No separate signup or user-provided API key is required. Private or authenticated pages and whole-site crawls are unsupported. No audit history is retained.
 
 Register the tool with the title **Run Lighthouse audit**, an input schema that rejects additional properties, and the output schema below advertised as `outputSchema`. Advertise `noauth` through the currently documented tool security metadata. Use `readOnlyHint: true`, `destructiveHint: false`, `idempotentHint: false`, and `openWorldHint: true`. Do not claim idempotence for a fresh measurement tool. Check the actual discovery output, not just TypeScript configuration. [S1][S2]
 
@@ -299,7 +299,7 @@ Only the owner needs the Google project/API key. End users do not supply one. Fa
 
 One accepted invocation gets **at most one** PSI request. No automatic retries, including after a 429, a timeout, or a field-mask error. An HTTP success with a Lighthouse `runtimeError` still requires failure handling.
 
-Use an application timeout of **120,000 ms**, including reading the response. The original 55,000 ms default cut off heavy pages, which take about 90 s at PSI (measured 2026-10-01), so the owner raised it. This is still a design default, not a claimed ChatGPT timeout. Propagate request/MCP cancellation where supported and release timers/readers in cleanup. Cancellation may not cancel work already started at Google.
+Use an application timeout of **57,000 ms**, including reading the response. Measured on 2026-10-01: ChatGPT stops waiting for a tool call after about 60 s, and heavy pages can take 70 to 90 s at PSI. A longer timeout only makes ChatGPT users wait for a result it no longer receives, so the timeout ends just before ChatGPT's limit and the client still gets `AUDIT_TIMEOUT`. Pages that take PSI longer cannot be audited through ChatGPT. Propagate request/MCP cancellation where supported and release timers/readers in cleanup. Cancellation may not cancel work already started at Google.
 
 Keep the tool synchronous for V1. Before launch, test that typical audits complete within the real client's wait budget. If normal audits repeatedly exceed that budget, report the incompatibility and measured timings. Do not quietly add queues, background jobs, polling tools, or paid infrastructure.
 
@@ -382,7 +382,7 @@ Keep `PSI_API_KEY` in Worker secrets; `.dev.vars` is local and gitignored. Provi
 
 The owner sets the key once with `wrangler secret put PSI_API_KEY`. Deploys keep existing Worker secrets, so the PSI key is never stored in GitHub, passed to a workflow, or printed in CI logs. GitHub holds only the Cloudflare deployment credentials (§11).
 
-Never log the key, upstream request URL, target URL, URL query, request body, raw Lighthouse output, snippets, headers, or cookies. Avoid unsanitized fetch exceptions and automatic upstream URL/body tracing. Use safe diagnostic fields: random request ID, device, duration, outcome/error code, response byte count, and release version. No application-level persistent audit storage or per-user tracking. Configure Workers observability explicitly (§11): invocation logs may stay on because the Worker's own request URL is `/mcp` and carries no target, but automatic subrequest tracing must stay off, because a traced provider URL contains the target URL. Before enabling audits in production, inspect real invocation-log entries and record which request fields they contain. If they include request headers such as `Authorization` or `Cookie`, or any request body, turn invocation logs off and rely on the Worker's own safe diagnostic fields (_validate_).
+Never log the key, upstream request URL, target URL, URL query, request body, raw Lighthouse output, snippets, headers, or cookies. Avoid unsanitized fetch exceptions and automatic upstream URL/body tracing. Use safe diagnostic fields: random request ID, device, duration, outcome/error code, response byte count, release version, and whether the client sent a `progressToken` (a boolean, to learn whether clients accept progress notifications). No application-level persistent audit storage or per-user tracking. Configure Workers observability explicitly (§11): invocation logs may stay on because the Worker's own request URL is `/mcp` and carries no target, but automatic subrequest tracing must stay off, because a traced provider URL contains the target URL. Before enabling audits in production, inspect real invocation-log entries and record which request fields they contain. If they include request headers such as `Authorization` or `Cookie`, or any request body, turn invocation logs off and rely on the Worker's own safe diagnostic fields (_validate_).
 
 The privacy page must accurately state that the submitted URL is processed by this service/Cloudflare, sent to Google for analysis, and that results return to the requesting client. State that the application does not retain audit history. Do not claim that Google, Cloudflare, or ChatGPT retain nothing. Document actual configured logging/retention behavior and obtain the owner's approval of public privacy/support copy before publication.
 
@@ -467,7 +467,7 @@ Starting `wrangler.jsonc` design (validate against the installed Wrangler schema
   },
   "vars": {
     "AUDITS_ENABLED": "false",
-    "PSI_TIMEOUT_MS": "120000",
+    "PSI_TIMEOUT_MS": "57000",
   },
 }
 ```
@@ -745,7 +745,7 @@ Keep these in one module (`src/limits.ts`). They are design defaults, not vendor
 | Input URL length                            | 2,048 characters                              | §4      |
 | MCP request body                            | 32 KiB                                        | §8      |
 | Provider requests per invocation            | 1, no automatic retries                       | §6      |
-| Provider timeout (`PSI_TIMEOUT_MS`)         | 120,000 ms, including body read               | §6      |
+| Provider timeout (`PSI_TIMEOUT_MS`)         | 57,000 ms, including body read                | §6      |
 | Provider response, decompressed             | 4 MiB                                         | §6      |
 | Stale provider timestamp warning            | more than 5 minutes before `requestStartedAt` | §5      |
 | Pass threshold for scored audits            | 0.9                                           | §7      |
