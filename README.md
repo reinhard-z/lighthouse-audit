@@ -1,10 +1,7 @@
 # Lighthouse Audit
 
 [![CI](https://github.com/reinhard-z/lighthouse-audit/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/reinhard-z/lighthouse-audit/actions/workflows/ci.yml)
-[![Deploy production](https://github.com/reinhard-z/lighthouse-audit/actions/workflows/deploy.yml/badge.svg)](https://github.com/reinhard-z/lighthouse-audit/actions/workflows/deploy.yml)
-[![MCP: Streamable HTTP](https://img.shields.io/badge/MCP-Streamable_HTTP-blue)](#connect)
-[![Runs on Cloudflare Workers](https://img.shields.io/badge/runs_on-Cloudflare_Workers-F38020)](https://developers.cloudflare.com/workers/)
-[![Node.js 22.18+](https://img.shields.io/badge/node-%E2%89%A522.18-339933)](package.json)
+[![Lighthouse Audit MCP server](https://glama.ai/mcp/servers/reinhard-z/lighthouse-audit/badges/score.svg)](https://glama.ai/mcp/servers/reinhard-z/lighthouse-audit)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 Fresh website performance, accessibility, and SEO checks. No separate signup.
@@ -25,7 +22,7 @@ Add this endpoint as a remote MCP server in your client and choose no authentica
 https://audit.mrza.ch/mcp
 ```
 
-The server uses Streamable HTTP. In ChatGPT, you can add custom MCP servers in developer mode if your plan includes it. The server isn't listed in any directory.
+The server uses Streamable HTTP. In ChatGPT, you can add custom MCP servers in developer mode if your plan includes it. It's also listed on [Glama](https://glama.ai/mcp/servers/reinhard-z/lighthouse-audit).
 
 You don't need an account, a Google login or an API key for this service. Your client may still ask you to sign in, or to approve the connection and each tool call.
 

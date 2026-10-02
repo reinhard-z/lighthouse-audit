@@ -1,6 +1,6 @@
 # Directory submission checklist
 
-Public-directory listing is a separate deliverable from a working endpoint. Nothing here has been submitted, and no directory or install link exists. If publication is blocked, the MCP server remains usable as a standalone project.
+Public-directory listing is a separate deliverable from a working endpoint. This checklist covers OpenAI's directory, and nothing has been submitted there. Separately, Glama indexed the repository on its own ([listing](https://glama.ai/mcp/servers/reinhard-z/lighthouse-audit), 2026-10-02). If publication is blocked, the MCP server remains usable as a standalone project.
 
 ## Open risks
 
