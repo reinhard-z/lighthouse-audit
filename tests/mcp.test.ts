@@ -9,7 +9,7 @@ import { createExecutionContext } from "cloudflare:test";
 import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from "vitest";
 import worker from "../src/index";
 import { MAX_TOOL_RESULT_BYTES } from "../src/limits";
-import { SERVER_INSTRUCTIONS, TOOL_DESCRIPTION, TOOL_NAME } from "../src/mcp";
+import { SERVER_INSTRUCTIONS, TOOL_DESCRIPTION, TOOL_NAME } from "../src/server";
 import { AuditResultSchema, type AuditResult } from "../src/schemas";
 import type { WorkerEnv } from "../src/validation";
 import { syntheticPsiResponse } from "./fixtures/psi";

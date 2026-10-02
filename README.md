@@ -68,6 +68,32 @@ Capacity is limited and shared. The service runs on free tiers. Google allows th
 
 The [privacy page](https://audit.mrza.ch/privacy) explains what happens to the URLs you submit.
 
+## Run it locally
+
+You can also run the same tool on your own machine as a local (stdio) MCP server, with your own PageSpeed Insights API key. It then uses your Google quota instead of the shared one. It needs Node.js 22.18 or later, pnpm 11 and a [PageSpeed Insights API key](https://developers.google.com/speed/docs/insights/v5/get-started).
+
+```sh
+git clone https://github.com/reinhard-z/lighthouse-audit.git
+cd lighthouse-audit
+pnpm install --frozen-lockfile
+```
+
+Then add it to your MCP client. Most clients take a configuration like this; replace the path and the key:
+
+```json
+{
+  "mcpServers": {
+    "lighthouse-audit": {
+      "command": "pnpm",
+      "args": ["--silent", "--dir", "/path/to/lighthouse-audit", "stdio"],
+      "env": { "PSI_API_KEY": "your-api-key" }
+    }
+  }
+}
+```
+
+Local mode behaves like the hosted service: one tool, one PageSpeed Insights request per call, the same URL checks and limits. It reads only `PSI_API_KEY` and, optionally, `PSI_TIMEOUT_MS` from the environment. Without a key it still starts and lists the tool, but tool calls return `SERVICE_UNAVAILABLE`. It writes diagnostics to stderr, never your URLs or your key.
+
 ## Development
 
 You need Node.js 22.18 or later and pnpm 11. The exact pnpm version is pinned in `package.json`.
@@ -75,6 +101,7 @@ You need Node.js 22.18 or later and pnpm 11. The exact pnpm version is pinned in
 ```sh
 pnpm install --frozen-lockfile
 pnpm dev          # wrangler dev on http://localhost:8787
+pnpm stdio        # the local stdio server (see "Run it locally")
 pnpm typecheck    # tsc in strict mode
 pnpm test         # Vitest in workerd and Node; never calls Google
 pnpm build        # wrangler deploy --dry-run --outdir dist
@@ -91,7 +118,9 @@ To run real audits locally, copy `.dev.vars.example` to `.dev.vars` (it's gitign
 
 ```text
 src/index.ts        HTTP routing, Host/Origin checks, body limit, headers, health
-src/mcp.ts          MCP server setup, tool registration, audit flow
+src/server.ts       MCP server setup, tool registration, audit flow
+src/mcp.ts          The Worker's Streamable HTTP MCP handler
+src/stdio.ts        The local stdio entry (`pnpm stdio`)
 src/pagespeed.ts    The PageSpeed Insights request: limits, timeout, cancellation, errors
 src/normalize.ts    Turns the Lighthouse report into the tool result (pure functions)
 src/validation.ts   Target URL and environment checks
