@@ -11,6 +11,7 @@
   },
   "scripts": {
     "dev": "wrangler dev --var LOCAL_DEVELOPMENT:true",
+    "stdio": "tsx src/stdio.ts",
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run",
     "test:watch": "vitest",

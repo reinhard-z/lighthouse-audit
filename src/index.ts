@@ -8,7 +8,8 @@
  */
 import { CANONICAL_ORIGIN, PRODUCTION_HOSTNAME } from "./branding";
 import { MAX_MCP_REQUEST_BODY_BYTES } from "./limits";
-import { LOCAL_HOSTNAMES, handleMcpRequest, type AuditRuntime, type SafeLogEntry } from "./mcp";
+import { LOCAL_HOSTNAMES, handleMcpRequest } from "./mcp";
+import type { AuditRuntime, SafeLogEntry } from "./server";
 import { isLocalDevelopment, releaseOf, type WorkerEnv } from "./validation";
 
 /** Headers on every Worker-generated response; `_headers` covers static assets only. */

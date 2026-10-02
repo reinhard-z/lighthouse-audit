@@ -1,14 +1,21 @@
 # Lighthouse Audit — coding-agent handover
 
-Version: 1.4  
+Version: 1.5  
 Prepared: 2026-10-01  
-Updated: 2026-10-01 — GitHub Actions deployment; see “Changes in 1.4”  
+Updated: 2026-10-02 — optional local stdio mode; see “Changes in 1.5”  
 Owner: Reinhard Zach  
 Public display name: **Lighthouse Audit**  
 Production hostname: `audit.mrza.ch`  
 Production MCP endpoint: `https://audit.mrza.ch/mcp`  
 Repository and Cloudflare Worker name: `lighthouse-audit`  
 Repository visibility: public (license still to be selected by the owner)
+
+## Changes in 1.5
+
+This revision keeps every product, scope, and naming decision from 1.4 and adds one owner-requested option for self-hosting.
+
+- **Local stdio mode (§1, §3):** the same single tool can also run as a local stdio process in Node (`pnpm stdio`) with the operator's own PSI key. The hosted Worker is unchanged and remains the product; local mode adds no tool, provider, storage, or network behavior.
+- **Layout (§12) and tests (§13):** the platform-neutral server moves to `src/server.ts`; `src/stdio.ts` is the local entry; stdio tests run in the Node test project.
 
 ## Changes in 1.4
 
@@ -51,6 +58,8 @@ Treat `mrza.ch` as the owner's domain, not as a standalone personal name or prod
 A user requests an audit, the client calls one tool, and the service makes one new PSI request. The tool returns bounded, structured measurements and actionable audit evidence. The client explains the results. The backend does not call an LLM.
 
 Ship one tool, one provider implementation, one Worker, one landing page, a privacy page, tests, and deployment/connection instructions. Build a complete small utility, not an SEO platform.
+
+Optional local mode: the same tool may also run as a local stdio process for self-hosting with the operator's own PSI key (§3). It is not a second product: it shares the server factory, tool contract, provider request, normalization, and limits with the Worker, and it adds no tool, storage, or network behavior. The hosted Worker remains the product described in this specification.
 
 ### Explicitly out of scope
 
@@ -115,6 +124,10 @@ At preparation time, Cloudflare recommends `createMcpHandler` from `agents/mcp/s
 Retain the handler's supported compatibility path for existing Streamable HTTP clients. Prove interoperability in tests rather than claiming compatibility from the package version alone. Do not implement JSON-RPC or MCP framing by hand.
 
 Keep per-request work small for the Free-plan CPU budget: define Zod schemas, any precomputed JSON Schema, the tool description, and the server instructions at module scope as immutable values, and construct only the `McpServer` instance per request.
+
+### Local stdio mode
+
+`src/stdio.ts` serves the same server factory over stdio with `serveStdio` from `@modelcontextprotocol/server/stdio`, started with `pnpm stdio` (`tsx`). Keep the factory and audit flow in `src/server.ts`, which must not import Cloudflare-only packages; `src/mcp.ts` holds only the Worker's Streamable HTTP handler. Local mode reads only `PSI_API_KEY` and `PSI_TIMEOUT_MS` from the environment. It has no kill switch of its own: audits are enabled, and a missing key makes tool calls return `SERVICE_UNAVAILABLE`, so the server still starts and lists its tool without credentials. stdout carries only MCP messages; diagnostics go to stderr with the same safe fields as the Worker logs (§8). The one-fetch, header-key, `redirect: "manual"`, and no-retry rules apply unchanged.
 
 Keep the PSI provider in its own small module so it can be replaced later. A function plus a typed result is enough; no generic provider framework or dependency-injection container.
 
@@ -559,7 +572,9 @@ Suggested structure; combine files when that genuinely simplifies the project:
 src/
   index.ts                 HTTP routing, headers, health, assets
   branding.ts              Display copy and canonical URLs
-  mcp.ts                   Server factory and tool registration
+  server.ts                Server factory, tool registration, audit flow (platform-neutral)
+  mcp.ts                   Worker Streamable HTTP handler
+  stdio.ts                 Optional local stdio entry (§3)
   pagespeed.ts             Single provider request, bounds, cancellation, redirect rejection
   normalize.ts             Pure report extraction and truncation
   validation.ts            URL and environment validation
@@ -579,6 +594,7 @@ tests/
   pagespeed.test.ts
   normalize.test.ts
   mcp.test.ts
+  stdio.test.ts            Local stdio mode, in the Node test project
   fixtures/                Synthetic or sanitized, explicitly labelled
 scripts/
   smoke.ts                 Opt-in real provider/endpoint checks
@@ -624,6 +640,7 @@ Do not make up an owner email, a GitHub repository URL, a privacy contact, crede
 15. A non-2xx provider body carrying a Lighthouse error code maps to `PAGE_LOAD_FAILED` with a safe `providerErrorCode` and no provider message text.
 16. Worker-generated responses (`/mcp`, `/healthz`, 403, 404) carry `Cache-Control: no-store` and `X-Content-Type-Options: nosniff`; static pages carry the `_headers` policy; `/privacy` returns 200 without a redirect.
 17. The deploy workflow cannot run from a ref other than `main`; only the build job runs dependency install scripts; the Cloudflare token appears only in the deploy step's `env`; every checkout sets `persist-credentials: false` (a static check of the workflow files is sufficient).
+18. Local stdio mode lists the same single tool; without a key, tool calls return `SERVICE_UNAVAILABLE` and make zero PSI calls; with a key, each call makes exactly one PSI call with the key in the header; the spawned process writes only JSON-RPC messages to stdout.
 
 ### Deployment/manual checks
 

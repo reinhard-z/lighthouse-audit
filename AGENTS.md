@@ -34,6 +34,7 @@ Node.js 22.18+ and pnpm 11 (pinned in `package.json`). Dependency install script
 ```sh
 pnpm install --frozen-lockfile
 pnpm dev          # wrangler dev on localhost:8787 with LOCAL_DEVELOPMENT=true
+pnpm stdio        # local stdio MCP server (tsx src/stdio.ts), own PSI_API_KEY from the environment
 pnpm typecheck    # tsc --noEmit, strict
 pnpm test         # Vitest: "workers" project in workerd, "node" project for repository checks
 pnpm build        # wrangler deploy --dry-run --outdir dist
@@ -69,7 +70,7 @@ Run `pnpm typecheck && pnpm test && pnpm build` before reporting a code change. 
 
 These are the rules most likely to be broken by accident. The spec has the full list.
 
-- **Scope:** one tool, one provider, one Worker. No accounts, OAuth, database, cache, deduplication, queues, Durable Objects, crawler, scheduling, comparison tool, audit IDs or widget (§1). Do not add any of these unless the owner asks.
+- **Scope:** one tool, one provider, one Worker, plus the optional local stdio mode that shares the same server (§1, §3). No accounts, OAuth, database, cache, deduplication, queues, Durable Objects, crawler, scheduling, comparison tool, audit IDs or widget (§1). Do not add any of these unless the owner asks.
 - **Naming:** the product is **Lighthouse Audit**, the developer is **Reinhard Zach**, and the identifier is `lighthouse-audit`. Never use "mrza" as a brand. Branding copy lives only in `src/branding.ts`.
 - **Domain:** never touch the apex, `www`, email records or other Workers on `mrza.ch`.
 - **One fetch, never to the target:** each tool call makes exactly one PSI request with `redirect: "manual"` and fails on any 3xx. Never use `redirect: "error"`, because it throws in workerd. The Worker never fetches the target URL itself. No retries.
